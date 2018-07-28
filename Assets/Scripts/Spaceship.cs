@@ -73,29 +73,30 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    protected virtual void OnEnable()
-    {
-    }
-
     IEnumerator Shield()
     {
         isInvincible = true;
 
-        shield.GetComponentInChildren<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+		float shieldAmount = 5f;
 
-        if (!shield.activeSelf)
-            shield.SetActive(true);
+		//shield.GetComponentInChildren<PolygonCollider2D> ().enabled = true;
+		shield.GetComponentInChildren<AudioSource> ().mute = false;
 
         if (shieldSeconds > 0)
-            shieldSeconds += 6;
+			shieldSeconds += shieldAmount;
         else
-        {
-            shieldSeconds += 6;
+        {			
+			shieldSeconds += shieldAmount;
+
             while (shieldSeconds > 0)
-            {
+			{
+				shield.GetComponentInChildren<SpriteRenderer>().color = new Color(1f, 1f, 1f, shieldSeconds/10f);
+
                 yield return new WaitForSeconds(1);
                 shieldSeconds--;
 
+				/*
+				//Not shure how this should look like so Iĺl do some testings 
                 if (shieldSeconds == 5)
                     shield.GetComponentInChildren<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.9f);
                 else
@@ -110,12 +111,14 @@ public class Spaceship : MonoBehaviour
                 else
                 if (shieldSeconds == 1)
                     shield.GetComponentInChildren<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.2f);
+                */
             }
         }
         if (shieldSeconds <= 0)
         {
             isInvincible = false;
-            shield.SetActive(false);
+			shield.GetComponentInChildren<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+			shield.GetComponentInChildren<AudioSource> ().mute = true;
         }
     }
 

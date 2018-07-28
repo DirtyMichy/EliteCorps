@@ -40,7 +40,7 @@ public class Enemy : Spaceship
     }
 
     //Setting up hp and behaviour
-    protected override void OnEnable()
+    void OnEnable()
     {
         //Setting hp 
         if (isBoss)
