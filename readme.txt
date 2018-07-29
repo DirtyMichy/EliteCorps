@@ -1,4 +1,4 @@
-Unity Version		5.5.1f1
+Unity Version		5.6.1f1
 Graphics			2D
 KeyboardSupport		Yes (player 1)
 GamepadSupport		Yes
