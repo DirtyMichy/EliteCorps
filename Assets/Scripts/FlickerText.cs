@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class FlickerText : MonoBehaviour
@@ -16,9 +17,9 @@ public class FlickerText : MonoBehaviour
 	{
 		while (true) {
 			if (seconds % 2 == 0) {
-				GetComponent<GUIText> ().enabled = false;
+				GetComponent<Text> ().enabled = false;
 			} else {
-				GetComponent<GUIText> ().enabled = true;
+				GetComponent<Text> ().enabled = true;
 			}
 
 			yield return new WaitForSeconds (1f);
