@@ -72,6 +72,7 @@ public class Manager : MonoBehaviour
     public GameObject highScoreScreen;
     public GameObject ingameScoreScreen;
     public GameObject missionScreen;
+    public GameObject[] CanvasScreens;
     public GameObject explosion;
     public GameObject[] PlayerChosenChar;
     public GameObject spawnManager;
@@ -83,12 +84,10 @@ public class Manager : MonoBehaviour
     public GameObject backGround;
     //Background (Water,...)
     public GameObject bossHealthBar;
-    public GameObject menuCam, ingameCam;
     //the menu uses other effects than ingame
     public GameObject escortPlane;
     public GameObject escortShip;
     public GameObject missionMarker;
-    public GameObject campaignSieg;
     public GameObject powerUp;
 
     public RectTransform bossHealth;
@@ -106,7 +105,7 @@ public class Manager : MonoBehaviour
     public Text QuestText;
     public Text chosenEpisode;
 
-    public bool menuActive = true;
+    //public bool menuActive = true;
     //True if any Menu is active
     public bool[] playerActive;
     //0 = Player1, ...
@@ -117,7 +116,7 @@ public class Manager : MonoBehaviour
     bool[] pressedPlayerDpad;
     public bool objectiveComplete = true;
     public bool fadeFinished = false;
-    public bool playingCampaign = false;
+
     //If the player plays the campaign he shall return to the missionMenu after the Highscore
     bool bossSpawned = false;
     bool pressedArrow = false;
@@ -145,8 +144,6 @@ public class Manager : MonoBehaviour
 
     public int[] playerScore;
     //The player's score 0 = Player1, ...
-    int gameTimeSeconds = 0;
-    //current playTime in seconds
 
     void InstaWin()
     {
@@ -321,18 +318,16 @@ public class Manager : MonoBehaviour
             UIBeeps[2].Play();
         }
     }
+
     //Setting the missionMode if gameMode is 1 and start spawncoroutines
     void GameStart()
     {
-        menuCam.SetActive(false);
-        ingameCam.SetActive(true);
-
         objectiveComplete = false;
 
         fadeDirection = -1;
         StartCoroutine("Fade");
 
-        menuActive = false;
+        currentMenu = activeMenu.None;
 
         //Deactivate the title and activate the player
         ingameScoreScreen.SetActive(true);
@@ -342,8 +337,6 @@ public class Manager : MonoBehaviour
         //0 = None, 1 = Mission, 2 = Survive
         if (gameMode == selectedGameMode.campaign)
         {
-            playingCampaign = true;
-
             //Spawn level
             Instantiate(missionObject[currentMissionSelection], missionObject[currentMissionSelection].transform.position, missionObject[currentMissionSelection].transform.rotation);
 
@@ -420,8 +413,6 @@ public class Manager : MonoBehaviour
         
         if (gameMode == selectedGameMode.survive)
         {
-            playingCampaign = false;
-
             missionText.text = "";
             objectiveText.text = "";
             missionMode = 0;
@@ -453,9 +444,7 @@ public class Manager : MonoBehaviour
         }
 
         objectiveComplete = false;              //Must be after the players are spawned
-
-        StartCoroutine("AmmoRefill");
-
+        
         spawnManager.GetComponent<EnemyManager>().StartSpawnCoroutines();
     }
 
@@ -493,29 +482,6 @@ public class Manager : MonoBehaviour
         fadeFinished = true;
     }
 
-    //Refilling players ammo
-    IEnumerator AmmoRefill()
-    {
-        //Loop indefinitely
-        while (true)
-        {
-            gameTimeSeconds++;
-            GameObject[] playerAlive = GameObject.FindGameObjectsWithTag("Player");
-
-            for (int i = 0; i < playerAlive.Length; i++)
-            {
-                if (playerAlive[i].GetComponent<PlayerMulti>())
-                {
-                    playerAlive[i].GetComponent<PlayerMulti>().ammo++;
-                    if (gameTimeSeconds % 60 == 0)
-                        playerAlive[i].GetComponent<PlayerMulti>().specialAmmo++;
-                    playerAlive[i].GetComponent<PlayerMulti>().AmmoUIUpdate();
-                }
-            }
-            yield return new WaitForSeconds(1f);
-        }
-    }
-
     //For objectiveMode 2
     IEnumerator CountDown()
     {
@@ -525,7 +491,6 @@ public class Manager : MonoBehaviour
             secondsLeft--;
         }
         CheckWinCondition();
-
     }
 
     IEnumerator VolumeOn()
@@ -546,13 +511,26 @@ public class Manager : MonoBehaviour
         }
     }
 
-    //0 = None, 1 = Kill 100 Enemies, 2 = Survive 300 Seconds, 3 = Kill 3 Ojectives
     void CheckWinCondition()
     {
         if (!objectiveComplete)
         {
-            if (gameMode == selectedGameMode.campaign)
-            {
+                //switch (missionMode)
+                //{
+                //    case missionObjectives.none:
+                //        break;
+                //    case missionObjectives.killAll:
+                //        break;
+                //    case missionObjectives.reachAndSurvive:
+                //        break;
+                //    case missionObjectives.killObjective:
+                //        break;
+                //    case missionObjectives.escortAndDefend:
+                //        break;
+                //    default:
+                //        break;
+                //}
+
                 GameObject[] escortPlane = GameObject.FindGameObjectsWithTag("Escort");
 
                 if ((missionMode == missionObjectives.killAll && kills >= maxKills)
@@ -562,19 +540,14 @@ public class Manager : MonoBehaviour
                 {
                     for (int i = 0; i < escortPlane.Length; i++)
                     {
-                        escortPlane[i].GetComponent<Rigidbody2D>().velocity = (transform.up) * 4f;
-                        escortPlane[i].GetComponent<PlayerMulti>().currentHP = 99999999;
+                        //escortPlane[i].GetComponent<Rigidbody2D>().velocity = (transform.up) * 4f;
+                        escortPlane[i].GetComponent<PlayerMulti>().currentHP = 666;
                     }
 
 
                     if (MissionIcons[currentMissionSelection].GetComponent<Mission>().thisMission == 5 && !bossSpawned)
                     {
                         bossSpawned = true;
-                        objectiveText.text = "BOSS";
-
-                        GetComponent<AudioSource>().clip = UImusic[0];
-                        GetComponent<AudioSource>().Play();
-
                         StartCoroutine("TriggerBossBattle");
                     }
 
@@ -586,7 +559,6 @@ public class Manager : MonoBehaviour
                     }
                 }
             }
-        }
     }
 
     int CountPlayersAlive()
@@ -599,9 +571,14 @@ public class Manager : MonoBehaviour
     {
         Debug.Log("TriggerBossBattle");
 
-        objectiveComplete = false; //Otherwise the winscreeen would load upon death
+        objectiveText.text = "BOSS";
 
-        spawnManager.GetComponent<EnemyManager>().StopSpawnCoroutines();//Stop spawning props and units
+        GetComponent<AudioSource>().clip = UImusic[0];
+        GetComponent<AudioSource>().Play();
+
+        objectiveComplete = false;                                          //Otherwise the winscreeen would load directly
+
+        spawnManager.GetComponent<EnemyManager>().StopSpawnCoroutines();    //Stop spawning props and units
 
         yield return new WaitForSeconds(5f);
         
@@ -632,18 +609,17 @@ public class Manager : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
             }
         }
-        if (CountPlayersAlive() > 0)
+
+        // EXTRA: Controls change during BOSS01 after 10 seconds
+        if (MissionIcons[currentMissionSelection].GetComponent<Mission>().thisEpisode == 1)
         {
             yield return new WaitForSeconds(10f);
-        }
-        //the player can die within the last 10 seconds, so we have to check for bosses
-        if (CountPlayersAlive() > 0)
-        {
-            if (bossSpawned && currentMenu == activeMenu.None)
+
+            //the player could still die during the 10 second delay, so we have to check again if they are alive
+            if (CountPlayersAlive() > 0 && bossSpawned && currentMenu == activeMenu.None)
             {
-                //Controls change during BOSS01
-                if (MissionIcons[currentMissionSelection].GetComponent<Mission>().thisEpisode == 1 )
-                {//BOSS01
+                if (MissionIcons[currentMissionSelection].GetComponent<Mission>().thisEpisode == 1)
+                {
                     GameObject[] playerAlive = GameObject.FindGameObjectsWithTag("Player");
                     for (int i = 0; i < playerAlive.Length; i++)
                     {
@@ -652,45 +628,44 @@ public class Manager : MonoBehaviour
 
                     backGround.GetComponentInChildren<WaterAnimation>().moveOffset = false;
                 }
-                //BOSS02 doesnt need extra settings                
             }
         }
     }
 
-    public void BossKilled()
+    public void ShowAndHideCanvas()
     {
-        if (MissionIcons[currentMissionSelection].GetComponent<Mission>().thisMission == 5)
+        for (int i = 0; i < CanvasScreens.Length; i++)
         {
-            objectiveComplete = true;
-            StartCoroutine("showHighScore");
+            CanvasScreens[i].SetActive(false);
+        }
 
-            //Boss gets instant winmusic
-            GetComponent<AudioSource>().clip = UImusic[5];
-            GetComponent<AudioSource>().Play();
+        switch (currentMenu)
+        {
+            case activeMenu.None:
+                break;
+            case activeMenu.TitleScreen:
+                CanvasScreens[0].SetActive(true);
+                break;
+            case activeMenu.ModeSelection:
+                CanvasScreens[1].SetActive(true);
+                break;
+            case activeMenu.MissionSelection:
+                CanvasScreens[2].SetActive(true);
+                break;
+            case activeMenu.CharSelection:
+                CanvasScreens[3].SetActive(true);
+                break;
+            case activeMenu.Highscore:
+                CanvasScreens[4].SetActive(true);
+                break;
+            default:
+                break;
         }
     }
 
-    IEnumerator showHighScore()
+
+    public void ShowHighScore()
     {
-        fadeFinished = false;
-        fadeDirection = 1;
-        for (float i = 0; i != 100; i++)
-        {
-            yield return new WaitForSeconds(0.025f);
-            if (fadeDirection == -1)
-            {
-                fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 1f - i / 100f);
-            }
-            else
-            {
-                fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, i / 100f);
-            }
-        }
-
-        menuCam.SetActive(true);
-        ingameCam.SetActive(false);
-
-        //0 = None, 1 = Mission, 2 = Survive
         if (objectiveComplete)
         {
             //Update missionProgress
@@ -729,61 +704,23 @@ public class Manager : MonoBehaviour
         }
 
         bossHealthBar.SetActive(false);
-        menuActive = true;
 
         currentMenu = activeMenu.Highscore;
 
         spawnManager.GetComponent<EnemyManager>().StopSpawnCoroutines();//Stop spawning props and units
 
-        StopCoroutine("AmmoRefill");
         StopCoroutine("CountDown");
 
         //Remove all gamePlayAssets from Scene
-        GameObject[] playerRemoval = GameObject.FindGameObjectsWithTag("Player");
-        GameObject[] enemyRemoval = GameObject.FindGameObjectsWithTag("Enemy");
-        GameObject[] propsRemoval = GameObject.FindGameObjectsWithTag("Props");
-        GameObject[] islandRemoval = GameObject.FindGameObjectsWithTag("Island");
-        GameObject[] escortRemoval = GameObject.FindGameObjectsWithTag("Escort");
-        GameObject[] bulletRemoval = GameObject.FindGameObjectsWithTag("Bullet");
-        GameObject[] levelRemoval = GameObject.FindGameObjectsWithTag("Level");
-        GameObject[] powerUpRemoval = GameObject.FindGameObjectsWithTag("PowerUp");
-
-        for (int i = 0; i < powerUpRemoval.Length; i++)
-        {
-            Destroy(powerUpRemoval[i]);
-        }
-        for (int i = 0; i < playerRemoval.Length; i++)
-        {
-            Destroy(playerRemoval[i]);
-        }
-        for (int i = 0; i < enemyRemoval.Length; i++)
-        {
-            Destroy(enemyRemoval[i]);
-        }
-        for (int i = 0; i < propsRemoval.Length; i++)
-        {
-            Destroy(propsRemoval[i]);
-        }
-        for (int i = 0; i < islandRemoval.Length; i++)
-        {
-            Destroy(islandRemoval[i]);
-        }
-        for (int i = 0; i < escortRemoval.Length; i++)
-        {
-            Destroy(escortRemoval[i]);
-        }
-        for (int i = 0; i < bulletRemoval.Length; i++)
-        {
-            Destroy(bulletRemoval[i]);
-        }
-        for (int i = 0; i < levelRemoval.Length; i++)
-        {
-            Destroy(levelRemoval[i]);
-        }
-
-        ingameScoreScreen.SetActive(false);
-        highScoreScreen.SetActive(true);
-
+        CleanScene("Player");
+        CleanScene("Enemy");
+        CleanScene("Props");
+        CleanScene("Island");
+        CleanScene("Escort");
+        CleanScene("Bullet");
+        CleanScene("Level");
+        CleanScene("PowerUp");
+        
         int highestScore = 0;
         int highestPlayer = 0;
 
@@ -805,22 +742,22 @@ public class Manager : MonoBehaviour
 
         resetScore();
 
-        fadeDirection = -1;
-        for (float i = 0; i != 100; i++)
-        {
-            yield return new WaitForSeconds(0.025f);
-            if (fadeDirection == -1)
-            {
-                fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 1f - i / 100f);
-            }
-            else
-            {
-                fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, i / 100f);
-            }
-        }
-        fadeFinished = true;
+        ShowAndHideCanvas();
 
+        fadeDirection = -1;
+        StartCoroutine("Fade");
     }
+
+    public void CleanScene(string objectsToFind)
+    {
+        GameObject[] removals = GameObject.FindGameObjectsWithTag(objectsToFind);
+
+        for (int i = 0; i < removals.Length; i++)
+        {
+            Destroy(removals[i]);
+        }
+    }
+
 
     //Adding points to the score of the specific player
     public void AddPoint(int point, int owner, bool isObjective)
@@ -843,9 +780,7 @@ public class Manager : MonoBehaviour
         {
             playerScore[i] = 0;
         }
-
-        gameTimeSeconds = 0;
-
+        
         kills = 0;
         objectiveKills = 0;
         secondsLeft = MAXSECONDS;
@@ -876,7 +811,7 @@ public class Manager : MonoBehaviour
     //Everything for the menu navigation
     void MenuNavigation()
     {
-        //Menu Navigations -1 = playing
+        //activeMenu.None = playing
         if (currentMenu != activeMenu.None)
         {
             GamepadInput.GamePad.Index[] gamePadIndex;
@@ -968,7 +903,6 @@ public class Manager : MonoBehaviour
                 }
             }
 
-
             //PlayerAny          
             Vector2 playerAnyDpad = GamePad.GetAxis(GamePad.Axis.Dpad, GamePad.Index.Any);
 
@@ -1051,16 +985,16 @@ public class Manager : MonoBehaviour
                 pressedArrow = false;
             }
 
-            //Menuselection 0 = StoryMode, 1 = Endless, 2 = Survival, 3 = Exit
-            //Modes 1 = StoryMode, 2 = Endless, 3 = Survival
-            if ((GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.A)) && currentMenu == activeMenu.ModeSelection && !pressedButton)
+            //Menuselection
+            if(currentMenu == activeMenu.ModeSelection)
+            if ((GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.A)) && !pressedButton)
             {
                 pressedButton = true;
                 UIBoomSound();
                 //StoryMode
                 if (currentMainMenuSelection == 0)
                 {
-                    GotoMissionMenu();
+                    GotoMissionSelection();
                     gameMode = selectedGameMode.campaign;
                 }
                 //SurvivalMode
@@ -1078,7 +1012,8 @@ public class Manager : MonoBehaviour
             }
 
             //missionSelection
-            if ((GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.A)) && currentMenu == activeMenu.MissionSelection && !pressedButton)
+            if (currentMenu == activeMenu.MissionSelection)
+                if ((GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.A)) && !pressedButton)
             {
                 pressedButton = true;
                 UIBoomSound();
@@ -1088,36 +1023,39 @@ public class Manager : MonoBehaviour
                 GotoSelectionScreen();
             }
 
-            //Setting to false after Button pressed to prefend fast menu scrolling
+            //Reallow button controls
             if (GamePad.GetButtonUp(GamePad.Button.A, GamePad.Index.Any) || GamePad.GetButtonUp(GamePad.Button.Y, GamePad.Index.Any) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.Y))
             {
+                //Timed invoke?
                 pressedButton = false;
             }
         }
 
         //Continue Mission or try again
-        if (currentMenu == activeMenu.Highscore && (GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.A)) && !pressedButton && fadeFinished)
+        if(currentMenu == activeMenu.Highscore)
+        if ((GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.A)) && !pressedButton && fadeFinished)
         {
             pressedButton = true;
-            UIBoomSound();
 
-            if (playingCampaign)
-                GotoMissionMenu();
+            if (gameMode == selectedGameMode.campaign)
+                GotoMissionSelection();
             else
                 GotoSelectionScreen();
         }
 
         //Get into the MainMenu
-        if (currentMenu == 0 && !pressedButton && (GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.Y) || Input.GetKey(KeyCode.A)))
+        if(currentMenu == activeMenu.TitleScreen)
+        if ((GamePad.GetButton(GamePad.Button.A, GamePad.Index.Any) || Input.GetKey(KeyCode.Y) || Input.GetKey(KeyCode.A)) && !pressedButton)
         {
             GotoMainMenu();
         }
 
-        //Start the game if it isn't already going and the player presses the key
-        if (((GamePad.GetButton(GamePad.Button.Start, GamePad.Index.Any) || Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) && currentMenu == activeMenu.CharSelection && menuActive && (playerActive[0] || playerActive[1] || playerActive[2] || playerActive[3])))
+        //Start the game
+        if(currentMenu == activeMenu.CharSelection)
+        if (((GamePad.GetButton(GamePad.Button.Start, GamePad.Index.Any) || 
+                Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) &&
+                (playerActive[0] || playerActive[1] || playerActive[2] || playerActive[3])))
         {
-            currentMenu = activeMenu.None;
-            menuActive = false;
             GameStart();
         }
     }
@@ -1136,25 +1074,24 @@ public class Manager : MonoBehaviour
     //Navigating to the main menu
     void GotoMainMenu()
     {
-        playingCampaign = false;
+        UIBoomSound();
+
         if (currentMenu == activeMenu.Highscore)
         {
             GetComponent<AudioSource>().clip = UImusic[2];
             GetComponent<AudioSource>().Play();
         }
         missionMarker.SetActive(false);
-        pressedButton = true;   //Prefend accidental menu navigation
+        pressedButton = true;                               //Prevend accidental menu navigation
         currentMenu = activeMenu.ModeSelection;
-        currentMainMenuSelection = 0; //Default is 1 -> Misson
+        currentMainMenuSelection = 0;                       //Default is 1 -> Misson
 
-        mainMenuScreen.SetActive(true); //Activate GUI Text
-        startScreen.SetActive(false);   //Deactivate old GUI
+        mainMenuScreen.SetActive(true);                     //Activate GUI Text
+        startScreen.SetActive(false);                       //Deactivate old GUI
         characterScreen.SetActive(false);
         highScoreScreen.SetActive(false);
         missionScreen.SetActive(false);
         
-        UIBoomSound();
-
         //Reset menu colorization
         for (int i = 0; i < mainMenuGuiText.Count; i++)
         {
@@ -1172,28 +1109,15 @@ public class Manager : MonoBehaviour
     }
 
     //Navigating to the campaign menu
-    void GotoMissionMenu()
+    void GotoMissionSelection()
     {
-        bool sieg = true;
+        UIBoomSound();
 
-        for (int i = 0; i < MissionIcons.Length; i++)
-        {
-            if (MissionIcons[i].GetComponent<Mission>().status != 2)
-                sieg = false;
-        }
+        currentMenu = activeMenu.MissionSelection;
 
-        if (currentMenu == activeMenu.Highscore && !sieg)
-        {
-            GetComponent<AudioSource>().clip = UImusic[2];
-            GetComponent<AudioSource>().Play();
-        }
-        if (sieg)
-        {
-            campaignSieg.SetActive(true);
-            GetComponent<AudioSource>().clip = UImusic[1];
-            GetComponent<AudioSource>().Play();
-        }
-
+        GetComponent<AudioSource>().clip = UImusic[4];
+        GetComponent<AudioSource>().Play();
+        
         for (int i = 0; i < MissionIcons.Length; i++)
         {
             if (MissionIcons[i].GetComponent<Mission>().status == 1)
@@ -1202,13 +1126,10 @@ public class Manager : MonoBehaviour
                 MissionIcons[i].GetComponent<SpriteRenderer>().sprite = MissionSpriteB;
         }
 
-
-
         missionMarker.SetActive(true);
         mainMenuScreen.SetActive(false);
         highScoreScreen.SetActive(false);
         missionScreen.SetActive(true);
-        currentMenu = activeMenu.MissionSelection;
 
         Dpad();
     }
@@ -1216,6 +1137,8 @@ public class Manager : MonoBehaviour
     //Navigating to the selection menu
     void GotoSelectionScreen()
     {
+        UIBoomSound();
+
         if (currentMenu == activeMenu.Highscore)
         {
             GetComponent<AudioSource>().clip = UImusic[2];
