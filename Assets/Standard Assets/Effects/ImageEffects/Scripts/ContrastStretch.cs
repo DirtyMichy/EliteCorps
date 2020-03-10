@@ -90,13 +90,12 @@ namespace UnityStandardAssets.ImageEffects
 
         void Start()
         {
-            /*
             // Disable if we don't support image effects
             if (!SystemInfo.supportsImageEffects) {
                 enabled = false;
                 return;
             }
-            */
+
             if (!shaderAdapt.isSupported || !shaderApply.isSupported || !shaderLum.isSupported || !shaderReduce.isSupported) {
                 enabled = false;
                 return;

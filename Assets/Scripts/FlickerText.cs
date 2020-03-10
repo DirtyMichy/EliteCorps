@@ -4,14 +4,26 @@ using System.Collections;
 
 public class FlickerText : MonoBehaviour
 {
-	public float speed = 2f;
-	private float alpha = 1f;
 
-	private void Update()
+	public int seconds = 0;
+
+	// Update is called once per frame
+	void Start ()
 	{
-		alpha = Mathf.Lerp(0, 1, Mathf.PingPong(Time.time * speed, 1));
-		Color color = GetComponent<Text>().color;
-		color.a = alpha;
-		GetComponent<Text>().color = color;
+		StartCoroutine ("timer");
+	}
+
+	IEnumerator timer ()
+	{
+		while (true) {
+			if (seconds % 2 == 0) {
+				GetComponent<Text> ().enabled = false;
+			} else {
+				GetComponent<Text> ().enabled = true;
+			}
+
+			yield return new WaitForSeconds (1f);
+			seconds++;
+		}
 	}
 }
