@@ -4,19 +4,12 @@ using UnityEngine;
 
 public class Pulse : MonoBehaviour
 {
-	public float time = 0.25f;
+	public float speed = 2f;
+	private float scale = 1f;
 
-	public void Awake ()
+	private void Update()
 	{
-		StartCoroutine ("PulseLoop");
-	}
-
-	public IEnumerator PulseLoop ()
-	{
-		while (true) {
-			iTween.ScaleBy (gameObject, iTween.Hash ("amount", new Vector3 (2f, 2f, 0f), "easeType", "easeInOutExpo", "looptype", "pingpong", "time", time));
-
-			yield return new WaitForSeconds (time * 2);
-		}
+		scale = Mathf.Lerp(1, 2, Mathf.PingPong(Time.time * speed, 1));
+		transform.localScale = new Vector3(scale, scale, scale);
 	}
 }

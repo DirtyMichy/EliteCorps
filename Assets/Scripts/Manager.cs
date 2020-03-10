@@ -4,18 +4,30 @@ using System.Collections;
 using GamepadInput;
 using System.Collections.Generic;
 
-//This is the manager for the game
 public class Manager : MonoBehaviour
 {
+
+
+    public static Manager current;          //A public static reference to itself (make's it visible to other objects without a reference)
+
+    [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Player ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
+
+    public int playerCount = 0;
+    public int[] playersChosenCharacter;    //Chosen Character by Player 0 = Character01
+    public int[] playerScore;               //The player's score 0 = Player1, ...
+    public bool[] playerActive;             //0 = Player1, ...
+    public GameObject[] PlayerChosenChar;
+
+
+    [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Objective ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
+
+    public bool objectiveComplete = true;
+
     private int maxObjectiveKills = 2;
     private int MAXSECONDS = 128;
     private int maxKills = 64;
-    private int startedCampaign = 0; //0 means no saveFile exists   
-    
-    [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Variables ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
+    private int startedCampaign = 0;        //0 means no saveFile exists   
 
-    public int[] playersChosenCharacter;  //Chosen Character by Player 0 = Character01
-    public int playerCount = 0;
 
     public enum missionObjectives
     {
@@ -37,11 +49,6 @@ public class Manager : MonoBehaviour
 
     public selectedGameMode gameMode;
 
-    public int currentMainMenuSelection = 0;        //Used for iteration with arrow keys oder dpad inside the main menu
-    public int currentMissionSelection = 0;         //Used for iteration with arrow keys oder dpad inside the mission menu
-
-    public int kills = 0, secondsLeft = 300, objectiveKills = 0;
-
     public enum activeMenu
     {
         None,
@@ -53,20 +60,26 @@ public class Manager : MonoBehaviour
     }
 
     public activeMenu currentMenu;
+
+
+    public int currentMainMenuSelection = 0;        //Used for iteration with arrow keys oder dpad inside the main menu
+    public int currentMissionSelection = 0;         //Used for iteration with arrow keys oder dpad inside the mission menu
+
+    public int kills = 0;
+    public int secondsLeft = 300;
+    public int objectiveKills = 0;
     
-    public int[] missionProgress; //[0] = E1M1, 0 = Disabled, 1 = Enabled, 2 = Won
-       
-    public static Manager current; //A public static reference to itself (make's it visible to other objects without a reference)
+    public int[] missionProgress; //[0] = E1M1, 0 = Disabled, 1 = Enabled, 2 = Won       
+
 
     public GameObject[] MissionIcons;
-    public GameObject[] Characters;
-    //All playable Characters
+    public GameObject[] PlayableCharacters;
     public GameObject[] missionObject;
-    //The player ship
     public GameObject[] player;
-    //0 = Player1, ...
+
+    [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Canvas ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
+
     public GameObject characterScreen;
-    //The game object containing the title text
     public GameObject startScreen;
     public GameObject mainMenuScreen;
     public GameObject highScoreScreen;
@@ -74,7 +87,6 @@ public class Manager : MonoBehaviour
     public GameObject missionScreen;
     public GameObject[] CanvasScreens;
     public GameObject explosion;
-    public GameObject[] PlayerChosenChar;
     public GameObject spawnManager;
     public GameObject objective;
     public GameObject Cloud;
@@ -101,49 +113,43 @@ public class Manager : MonoBehaviour
     public Text objectiveText;
 
     //ingame status in upper right corner
-    public Text missionText;
-    public Text QuestText;
-    public Text chosenEpisode;
-
-    //public bool menuActive = true;
-    //True if any Menu is active
-    public bool[] playerActive;
-    //0 = Player1, ...
+    public Text missionText;        //put this into a seperate script???
+    public Text QuestText;      //put this into a seperate script???
+    public Text chosenEpisode; //put this into a seperate script???
+       
     public bool pressedDpad = false;
-    //prevend fast menu scrolling
-    public bool pressedButton = false;
-    //prefend fast menu selection
-    bool[] pressedPlayerDpad;
-    public bool objectiveComplete = true;
-    public bool fadeFinished = false;
+
+    public bool pressedButton = false;    //prevend fast menu scrolling
+
+    private bool[] pressedPlayerDpad;    //prevend fast menu selection
+    private bool fadeFinished = false;
 
     //If the player plays the campaign he shall return to the missionMenu after the Highscore
-    bool bossSpawned = false;
-    bool pressedArrow = false;
+    private bool bossSpawned = false;
+    private bool pressedArrow = false;
 
-    int fadeDirection = -1;
-    //-1 fadeIn (transparent), 1 fadeOut (darken)
+    private int fadeDirection = -1;  //-1 fadeIn (transparent), 1 fadeOut (darken)
 
-    public AudioClip[] UImusic, BattleMusic;
-    //Music
-    public AudioSource[] UIBeeps;
-    //Beeps for ButtonFeedBack
-    public AudioClip[] DeathSounds;
-    //Dying laughter sounds
 
-    Vector2[] playerDpad;
 
-    public string missionName = "";
-    //Current Mission like E1M1
-    public string[] mainMenuText;
-    //0 = StoryMode, 1 = Survival, 2 = Exit
+    private Vector2[] playerDpad;
+
+    public string missionName = "";    //Current Mission like E1M1
+
+    public string[] mainMenuText;    //0 = StoryMode, 1 = Survival, 2 = Exit
+
 
     public Sprite[] CharPreviews;
-    //Character Previews
+
     public Sprite logoSprite, menuSprite, victorySprite, loseSprite, worldMap, MissionSpriteA, MissionSpriteB, MissionSpriteC;
 
-    public int[] playerScore;
-    //The player's score 0 = Player1, ...
+
+    [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Audio ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
+
+    public AudioClip[] UImusic;
+    public AudioClip[] BattleMusic;
+    public AudioSource[] UIBeeps;
+    public AudioClip[] DeathSounds;
 
     void InstaWin()
     {
@@ -169,7 +175,8 @@ public class Manager : MonoBehaviour
         //If this isn't the first play, then there is a saveFile to load
         if (PlayerPrefs.GetInt("startedCampaign") > 0)
         {
-            missionProgress = PlayerPrefsX.GetIntArray("missionProgress");
+            //#################################################################################SAVEGAME#################################################################################
+            //missionProgress = PlayerPrefsX.GetIntArray("missionProgress");
             //Debug.Log(missionProgress.Length);
             for (int i = 0; i < MissionIcons.Length; i++)
             {
@@ -436,7 +443,7 @@ public class Manager : MonoBehaviour
         {
             if (playerActive[i])
             {
-                player[i] = (GameObject)Instantiate(Characters[Mathf.Abs(playersChosenCharacter[i])], Characters[Mathf.Abs(playersChosenCharacter[i])].transform.position = new Vector2(1f, 0f), Characters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
+                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.position = new Vector2(1f, 0f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
                 player[i].SendMessage("SetPlayer", (i + 1));
                 player[i].SendMessage("SetPlaneValue", (playerCount));
                 player[i].GetComponent<PlayerMulti>().playerUIUpdate();
@@ -625,8 +632,6 @@ public class Manager : MonoBehaviour
                     {
                         playerAlive[i].GetComponent<PlayerMulti>().wrap = true;
                     }
-
-                    backGround.GetComponentInChildren<WaterAnimation>().moveOffset = false;
                 }
             }
         }
@@ -785,11 +790,6 @@ public class Manager : MonoBehaviour
         objectiveKills = 0;
         secondsLeft = MAXSECONDS;
         bossSpawned = false;
-
-        if (MissionIcons[currentMissionSelection].GetComponent<Mission>().thisEpisode == 1 && backGround.GetComponentInChildren<WaterAnimation>())
-        {
-            backGround.GetComponentInChildren<WaterAnimation>().moveOffset = true;
-        }
     }
     
     public void Save()
@@ -798,8 +798,9 @@ public class Manager : MonoBehaviour
         {
             missionProgress[i] = MissionIcons[i].GetComponent<Mission>().status;
         }
+        //#################################################################################SAVEGAME#################################################################################
         //Save the progress to the player prefs
-        PlayerPrefsX.SetIntArray("missionProgress", missionProgress);
+        //PlayerPrefsX.SetIntArray("missionProgress", missionProgress);
 
 
         if (startedCampaign == 0)
@@ -848,7 +849,7 @@ public class Manager : MonoBehaviour
                     {
                         pressedPlayerDpad[i] = true;
                         playersChosenCharacter[i]++;
-                        playersChosenCharacter[i] %= Characters.Length;
+                        playersChosenCharacter[i] %= PlayableCharacters.Length;
                         PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[i])];
                         UIBeeps[1].Play();
                     }
@@ -856,7 +857,7 @@ public class Manager : MonoBehaviour
                     {
                         pressedPlayerDpad[i] = true;
                         playersChosenCharacter[i]--;
-                        playersChosenCharacter[i] %= Characters.Length;
+                        playersChosenCharacter[i] %= PlayableCharacters.Length;
                         PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[i])];
                         UIBeeps[1].Play();
                     }
@@ -887,14 +888,14 @@ public class Manager : MonoBehaviour
                 {
                     pressedArrow = true;
                     playersChosenCharacter[0]++;
-                    playersChosenCharacter[0] %= Characters.Length;
+                    playersChosenCharacter[0] %= PlayableCharacters.Length;
                     PlayerChosenChar[0].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[0])];
                 }
                 if (Input.GetKey(KeyCode.UpArrow) && !pressedArrow)
                 {
                     pressedArrow = true;
                     playersChosenCharacter[0]--;
-                    playersChosenCharacter[0] %= Characters.Length;
+                    playersChosenCharacter[0] %= PlayableCharacters.Length;
                     PlayerChosenChar[0].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[0])];
                 }
                 if (Input.GetKeyUp(KeyCode.DownArrow))
