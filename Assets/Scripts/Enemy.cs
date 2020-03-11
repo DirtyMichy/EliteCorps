@@ -201,7 +201,10 @@ public class Enemy : UnitObject
 			//...and deactivate this ship.
 
 			if (isBoss)
-				Manager.current.BossKilled ();
+			{
+				Manager.current.objectiveComplete = true;
+				Manager.current.ShowHighScore();
+			}
 		} else {
 			//play the damaged animation, debris is being ignored
 			if (unitName != "DrillingPitDestroyed" && unitName != "BunkerDebris")
