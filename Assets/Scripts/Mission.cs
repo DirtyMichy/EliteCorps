@@ -8,6 +8,10 @@ public class Mission : MonoBehaviour
 
 	public int thisEpisode = 0;
 	public int thisMission = 0;
+
+	/*
+	public missionStatus status = missionStatus.locked;
+	
 	public enum missionStatus
 	{
 		locked,
@@ -15,7 +19,6 @@ public class Mission : MonoBehaviour
 		finished
 	}
 
-	//public missionStatus status = missionStatus.locked;
-
+	*/
 	public int status = 0;
 }

@@ -61,19 +61,19 @@ public class EnemyManager : MonoBehaviour
                 if (Manager.current.missionMode == Manager.missionObjectives.killObjective)
                 {
                     //Spawning additional Flaks
-                    if (Manager.current.currentMissionSelection == 0 && Manager.current.objectiveKills < 4 && (seconds % campaingObjectiveSpawn) == 0)
+                    if (Manager.current.currentMissionSelected == 0 && Manager.current.objectiveKills < 4 && (seconds % campaingObjectiveSpawn) == 0)
                     {
                         Instantiate(extraObjectives[0], extraObjectives[0].transform.position = new Vector2(0f, 10f), extraObjectives[0].transform.rotation);
                         campaingObjectiveSpawn = 5; // For quicker missions
                     }
                     //Spawning additional Objective
-                    if (Manager.current.currentMissionSelection == 2 && Manager.current.objectiveKills < 1 && (seconds % campaingObjectiveSpawn == 0))
+                    if (Manager.current.currentMissionSelected == 2 && Manager.current.objectiveKills < 1 && (seconds % campaingObjectiveSpawn == 0))
                     {
                         Instantiate(objectives[0], objectives[0].transform.position = new Vector2(0f, 10f), objectives[0].transform.rotation);
                         campaingObjectiveSpawn = 20; // For quicker missions
                     }
                     //Spawning additional Objective
-                    if (Manager.current.currentMissionSelection == 8 && Manager.current.objectiveKills < 3 && (seconds % campaingObjectiveSpawn / 2f == 0))
+                    if (Manager.current.currentMissionSelected == 8 && Manager.current.objectiveKills < 3 && (seconds % campaingObjectiveSpawn / 2f == 0))
                     {
                         Instantiate(objectives[1], objectives[1].transform.position = new Vector2(0f, 10f), objectives[1].transform.rotation);
                         campaingObjectiveSpawn = 20; // For quicker missions
@@ -141,13 +141,13 @@ public class EnemyManager : MonoBehaviour
         //############################################################ EPISODE I ############################################################
 
         //Debug.Log(maxRng);                    
-        if (Manager.current.currentMissionSelection < 5)
+        if (Manager.current.currentMissionSelected < 5)
         {
             //0-4 EasyPlane,AttackBoat,SmallPlane,SpyPlane,FlakShip
             float screenWidth = Mathf.Abs(min.x) + max.x;
             //            Debug.Log(screenWidth); 
 
-            if (Manager.current.currentMissionSelection == 0)
+            if (Manager.current.currentMissionSelected == 0)
             {
                 int rng = Random.Range(0, 3); //-1
                 if (rng == 0) //7 Planes
@@ -179,7 +179,7 @@ public class EnemyManager : MonoBehaviour
                     }
             }
 
-            if (Manager.current.currentMissionSelection == 1)
+            if (Manager.current.currentMissionSelected == 1)
             {
                 int rng = Random.Range(0, 2); //-1
                 if (rng == 0) //5 Planes
@@ -200,7 +200,7 @@ public class EnemyManager : MonoBehaviour
                         Instantiate(e1Enemies[1], e1Enemies[1].transform.position = new Vector2(spawnPosition, 11f), e1Enemies[1].transform.rotation);
                     }
             }
-            if (Manager.current.currentMissionSelection == 2)
+            if (Manager.current.currentMissionSelected == 2)
             {
                 int rng = Random.Range(0, 3); //-1
                 if (rng == 0)
@@ -233,7 +233,7 @@ public class EnemyManager : MonoBehaviour
                     }
                 }
             }
-            if (Manager.current.currentMissionSelection == 3)
+            if (Manager.current.currentMissionSelected == 3)
             {
                 int rng = Random.Range(0, 3); //-1
                 if (rng == 0) // 7 Boats
@@ -257,7 +257,7 @@ public class EnemyManager : MonoBehaviour
                 }
 
             }
-            if (Manager.current.currentMissionSelection == 4)
+            if (Manager.current.currentMissionSelected == 4)
             {
                 int rng = Random.Range(0, 2); //-1
 
@@ -290,10 +290,10 @@ public class EnemyManager : MonoBehaviour
 
         //############################################################ EPISODE II ############################################################
 
-        if (Manager.current.currentMissionSelection > 4 && Manager.current.currentMissionSelection < 10)
+        if (Manager.current.currentMissionSelected > 4 && Manager.current.currentMissionSelected < 10)
         {
 
-            if (Manager.current.currentMissionSelection == 5)
+            if (Manager.current.currentMissionSelected == 5)
             {//VIP
                 int rng = Random.Range(0, 2); //-1
                 if (rng == 0) //7 enemies
@@ -311,7 +311,7 @@ public class EnemyManager : MonoBehaviour
                     }
             }
 
-            if (Manager.current.currentMissionSelection == 6)
+            if (Manager.current.currentMissionSelected == 6)
             {//Survive
                 for (int i = 0; i < 7; i++)
                 {
@@ -321,7 +321,7 @@ public class EnemyManager : MonoBehaviour
                 }
             }
 
-            if (Manager.current.currentMissionSelection == 7)
+            if (Manager.current.currentMissionSelected == 7)
             {//Rage
                 int rng = Random.Range(0, 3);
                 for (int i = 0; i < 7; i++)
@@ -330,7 +330,7 @@ public class EnemyManager : MonoBehaviour
                     Instantiate(e2Enemies[rng], e2Enemies[rng].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e2Enemies[rng].transform.rotation);
                 }
             }
-            if (Manager.current.currentMissionSelection == 8)
+            if (Manager.current.currentMissionSelected == 8)
             {//Objective
                 int rng = Random.Range(0, 4); //-1
                 if (rng == 0) //5 centered enemies
@@ -350,7 +350,7 @@ public class EnemyManager : MonoBehaviour
                         Instantiate(e2Enemies[4], e2Enemies[4].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e2Enemies[4].transform.rotation);
                     }
             }
-            if (Manager.current.currentMissionSelection == 9)
+            if (Manager.current.currentMissionSelected == 9)
             {//Boss
                 for (int i = 0; i < 5; i++)
                 {
