@@ -3,15 +3,13 @@ using System.Collections;
 
 public class Rotator : MonoBehaviour
 {
-
-	public int direction = 2;
-    
+	public int directionAndSpeed = 2;
+	private Vector3 rotator;
 	// Update is called once per frame
 	void Update ()
 	{
-		Vector3 r = transform.eulerAngles;
-		r.z += Time.deltaTime * direction * 100f;
-		transform.eulerAngles = r;
-	}
-    
+		rotator = transform.eulerAngles;
+		rotator.z += Time.deltaTime * directionAndSpeed;
+		transform.eulerAngles = rotator;
+	}    
 }

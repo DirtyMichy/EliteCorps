@@ -16,11 +16,6 @@ public class Bullet : MonoBehaviour
 
 		Invoke ("Die", lifeTime);
 	}
-	
-	void OnDisable()
-	{
-		CancelInvoke ("Die");
-	}
 
     public void SetOwner(int i)
     {
