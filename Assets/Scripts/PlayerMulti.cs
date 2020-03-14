@@ -256,7 +256,7 @@ public class PlayerMulti : UnitObject
 		if (c.GetComponent<Bullet> ().powerUpType == 0) {
 			if (!isInvincible) {
 				//Subtract bullet's damage from hit points
-				currentHP -= obj.power;
+				currentHP -= obj.damage;
 				healthBar.fillAmount = 100f / hp * currentHP / 100f;
 			}
 		} else {

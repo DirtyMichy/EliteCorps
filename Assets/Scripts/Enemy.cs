@@ -61,7 +61,6 @@ public class Enemy : UnitObject
 			if (playerAlive.Length > 0)
 				hp = hp * playerAlive.Length;
 
-			bossHealth = Manager.current.bossHealth;
 			currentHP = hp;
 			bossHealth.transform.localScale = new Vector3 (100f / hp * currentHP / 100f, bossHealth.transform.localScale.y, bossHealth.transform.localScale.z);
 		} else if (unitName == "Cannon") { //Setting hp of bossCannon
@@ -161,15 +160,15 @@ public class Enemy : UnitObject
 		Bullet obj = c.GetComponent<Bullet> ();
 		//Subtract bullet's damage from hit points
 		if (currentHP > 0 && damageModifier <= 1) //so healthbars dont get lower than 0hp
-            currentHP -= obj.power;
+            currentHP -= obj.damage;
 		else {
 			if (currentHP > 0) {
 				if (unitName == "Boss01" && damageModifier == 3)
-					currentHP -= obj.power * 2;
+					currentHP -= obj.damage * 2;
 				else if (unitName == "Boss02" && damageModifier == 3)
-					currentHP -= obj.power * 2;
+					currentHP -= obj.damage * 2;
 				else
-					currentHP -= obj.power;
+					currentHP -= obj.damage;
 			}
 		}
 		//Setting the healthbar for the bos
