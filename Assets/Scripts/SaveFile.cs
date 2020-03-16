@@ -6,7 +6,7 @@ public class SaveFile
 {
     public static SaveFile current;
     public int MAXPLAYERS = 4;
-    public int MAXMISSIONS = 10;
+    public int MAXMISSIONS = 100;
     public string test;
     public bool firstTimeEntering = true;
     public int playerCount;

@@ -1,9 +1,8 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
 
-[CustomEditor(typeof(Mission))]
+[CustomEditor(typeof(Manager))]
 public class BUTTON_InitMissionsCubeSpawner : Editor
 {
     public override void OnInspectorGUI()
@@ -11,9 +10,9 @@ public class BUTTON_InitMissionsCubeSpawner : Editor
         DrawDefaultInspector();
 
         //CubeSpawner myScript = (CubeSpawner)target;
-        if (GUILayout.Button("Spawn Cubes"))
+        if (GUILayout.Button("TestButton"))
         {
-         //   myScript.SpawnCube();
+            Debug.Log("TEST");
         }
 
     }

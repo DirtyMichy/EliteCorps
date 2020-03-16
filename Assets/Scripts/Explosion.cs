@@ -9,9 +9,6 @@ public class Explosion : MonoBehaviour
 	{	
 		//Invoke the Die method
 		Invoke ("Die", lifeTime);
-
-        if (tag == "PowerUp")
-            iTween.ScaleBy(gameObject, iTween.Hash("amount", new Vector3(0f, 0f, 0f), "easeType", "easeInOutExpo", "time", .5f));
     }
 	
 	void Die()

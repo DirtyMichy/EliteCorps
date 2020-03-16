@@ -3,23 +3,16 @@ using System.Collections;
 
 public class EnemyManager : MonoBehaviour
 {
-    //Viewport
     private Vector2 min, max;
-
-    //float OBJECTIVESPAWN = 20; //Only for endlessMode
-    float campaingObjectiveSpawn = 30;
-    //Is being resettet in StartSpawnCoroutines()
-
+    private float campaingObjectiveSpawn = 30;
+    private int maxRngForWaves = 2;
+    public int seconds = 0;
     public GameObject[] bosses;
     public GameObject[] waveEnemies;
     public GameObject[] e1Enemies;
     public GameObject[] e2Enemies;
     public GameObject[] objectives;
     public GameObject[] extraObjectives;
-    public int seconds = 0;
-    int maxRngForWaves = 2;
-    public GameObject cloud;
-    public GameObject isle;
 
     public void Start()
     {
@@ -31,85 +24,14 @@ public class EnemyManager : MonoBehaviour
     {
         StartCoroutine("Spawn");
 
-        campaingObjectiveSpawn = 30; // resetting
+        campaingObjectiveSpawn = 30;
         maxRngForWaves = 2;
-        seconds = 20; //20 so the objectives directly spawns
+        seconds = 20;
     }
 
     public void StopSpawnCoroutines()
     {
-        StopCoroutine("Spawn"); //Stop spawning props and units
-    }
-
-    //Spawns enemies and counts seconds
-    public IEnumerator Spawn()
-    {
-        //Loop indefinitely
-        while (Manager.current.currentMenu == Manager.activeMenu.None)
-        {
-
-            GameObject[] playerAlive = GameObject.FindGameObjectsWithTag("Player");
-
-            //Menuselection 0 = StoryMode, 1 = Endless, 2 = Survival, 3 = Exit
-            //Modes 1 = StoryMode, 2 = Endless, 3 = Survival
-            //1 = Kills, 2 = Seconds, 3 = Objectives, 4 = PlaneSeconds, 5 = KM
-            if (Manager.current.gameMode == Manager.selectedGameMode.campaign)
-            { //1 = CampaignMissions
-                missionSpawns();
-                yield return new WaitForSeconds(6f);
-                //Spawn extraObjective for campaign
-                if (Manager.current.missionMode == Manager.missionObjectives.killObjective)
-                {
-                    //Spawning additional Flaks
-                    if (Manager.current.currentMissionSelected == 0 && Manager.current.objectiveKills < 4 && (seconds % campaingObjectiveSpawn) == 0)
-                    {
-                        Instantiate(extraObjectives[0], extraObjectives[0].transform.position = new Vector2(0f, 10f), extraObjectives[0].transform.rotation);
-                        campaingObjectiveSpawn = 5; // For quicker missions
-                    }
-                    //Spawning additional Objective
-                    if (Manager.current.currentMissionSelected == 2 && Manager.current.objectiveKills < 1 && (seconds % campaingObjectiveSpawn == 0))
-                    {
-                        Instantiate(objectives[0], objectives[0].transform.position = new Vector2(0f, 10f), objectives[0].transform.rotation);
-                        campaingObjectiveSpawn = 20; // For quicker missions
-                    }
-                    //Spawning additional Objective
-                    if (Manager.current.currentMissionSelected == 8 && Manager.current.objectiveKills < 3 && (seconds % campaingObjectiveSpawn / 2f == 0))
-                    {
-                        Instantiate(objectives[1], objectives[1].transform.position = new Vector2(0f, 10f), objectives[1].transform.rotation);
-                        campaingObjectiveSpawn = 20; // For quicker missions
-                    }
-                }
-            }
-
-            if (Manager.current.gameMode == Manager.selectedGameMode.survive)
-            {
-                Waves();
-                yield return new WaitForSeconds(10f / playerAlive.Length);
-            }
-
-            seconds++;
-        }
-    }
-
-    void EndlessMissions()
-    {
-        int rng = Random.Range(0, 5); //-1
-
-        GameObject[] enemies = new GameObject[10];
-
-        for (int i = 0; i < 5; i++)
-        {
-            enemies[i] = e1Enemies[i];
-        }
-        for (int i = 5; i < 10; i++)
-        {
-            enemies[i] = e2Enemies[i - 5];
-        }
-
-        Instantiate(enemies[rng], enemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), enemies[rng].transform.rotation);
-        Instantiate(enemies[rng], enemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), enemies[rng].transform.rotation);
-        Instantiate(enemies[rng], enemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), enemies[rng].transform.rotation);
-        Instantiate(enemies[rng], enemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), enemies[rng].transform.rotation);
+        StopCoroutine("Spawn");
     }
 
     void Waves()
@@ -121,31 +43,65 @@ public class EnemyManager : MonoBehaviour
         Instantiate(waveEnemies[rng], waveEnemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), waveEnemies[rng].transform.rotation);
     }
 
-    public void spawnBoss01()
+    public void spawnBoss(int bossNumber)
     {
-        Instantiate(bosses[0], bosses[0].transform.position = new Vector2((max.x + min.x) / 2, 6f), bosses[0].transform.rotation);
+        Instantiate(bosses[bossNumber]);
     }
 
-    public void spawnBoss02()
+    //Spawns enemies and counts seconds
+    public IEnumerator Spawn()
     {
-        Instantiate(bosses[1], bosses[1].transform.position = new Vector2((max.x + min.x) / 2, -9f), bosses[1].transform.rotation);
-    }
+        while (Manager.current.currentMenu == Manager.activeMenu.None)
+        {
+            if (Manager.current.gameMode == Manager.selectedGameMode.campaign)
+            {
+                missionSpawns();
+                yield return new WaitForSeconds(6f);
+            }
 
+            if (Manager.current.gameMode == Manager.selectedGameMode.survive)
+            {
+                Waves();
+                yield return new WaitForSeconds(10f / Manager.current.playerCount);
+            }
+
+            seconds++;
+        }
+    }
+    
     void missionSpawns()
     {
         min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
         max = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
 
-        float spawnPosition = 0; //FullscreenSpawn
+        float spawnPosition = 0;
+
+        if (Manager.current.missionMode == Manager.missionObjectives.killObjective)
+        {
+            //Spawning additional Objectives, if you missed the objective another one should spawn faster
+            if (Manager.current.currentMissionSelected == 0 && Manager.current.objectiveKills < 4 && (seconds % campaingObjectiveSpawn) == 0)
+            {
+                Instantiate(extraObjectives[0], extraObjectives[0].transform.position = new Vector2(0f, 10f), extraObjectives[0].transform.rotation);
+                campaingObjectiveSpawn = 5; 
+            }
+            if (Manager.current.currentMissionSelected == 2 && Manager.current.objectiveKills < 1 && (seconds % campaingObjectiveSpawn == 0))
+            {
+                Instantiate(objectives[0], objectives[0].transform.position = new Vector2(0f, 10f), objectives[0].transform.rotation);
+                campaingObjectiveSpawn = 20; 
+            }
+            if (Manager.current.currentMissionSelected == 8 && Manager.current.objectiveKills < 3 && (seconds % campaingObjectiveSpawn / 2f == 0))
+            {
+                Instantiate(objectives[1], objectives[1].transform.position = new Vector2(0f, 10f), objectives[1].transform.rotation);
+                campaingObjectiveSpawn = 20;
+            }
+        }
 
         //############################################################ EPISODE I ############################################################
 
-        //Debug.Log(maxRng);                    
         if (Manager.current.currentMissionSelected < 5)
         {
             //0-4 EasyPlane,AttackBoat,SmallPlane,SpyPlane,FlakShip
             float screenWidth = Mathf.Abs(min.x) + max.x;
-            //            Debug.Log(screenWidth); 
 
             if (Manager.current.currentMissionSelected == 0)
             {
