@@ -797,7 +797,7 @@ public class Manager : MonoBehaviour
                         playersChosenCharacter[i]++;
                         playersChosenCharacter[i] %= PlayableCharacters.Length;
                         PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[i])];
-                        UIBeeps[1].Play();
+                        UINavigationAudio();
                     }
                     if ((playerDpad[i].y > 0f) && !pressedPlayerDpad[i])
                     {
@@ -854,9 +854,10 @@ public class Manager : MonoBehaviour
             if (currentMenu == activeMenu.ModeSelection || currentMenu == activeMenu.MissionSelection)
             {
                 if ((playerAnyDpad.y < 0f) && !pressedDpad)
-                { //&& currentMenu==1 ?
+                {
                     if (currentMenu == activeMenu.ModeSelection)
                         currentMainMenuSelection++;
+
                     if (currentMenu == activeMenu.MissionSelection)
                         do
                         {
@@ -865,6 +866,7 @@ public class Manager : MonoBehaviour
                             else
                                 currentMissionSelected = 0;
                         } while (Missions[currentMissionSelected].GetComponent<Mission>().status < 1);
+
                     Dpad();
                 }
 
@@ -889,24 +891,30 @@ public class Manager : MonoBehaviour
                 {
                     pressedDpad = false;
                 }
-
+                
                 //################################Keyboardsupport################################
                 if (Input.GetKey(KeyCode.DownArrow) && !pressedArrow)
                 {
+                    Debug.Log(currentMissionSelected);
                     if (currentMenu == activeMenu.ModeSelection)
                         currentMainMenuSelection++;
+                    
                     if (currentMenu == activeMenu.MissionSelection)
                         do
                         {
+                            Debug.Log(currentMissionSelected);
                             if (currentMissionSelected > 0)
                                 currentMissionSelected--;
                             else
                                 currentMissionSelected = Missions.Count - 1;
+                            Debug.Log(currentMissionSelected);
                         } while (Missions[currentMissionSelected].GetComponent<Mission>().status < 1);
 
+                    Debug.Log(currentMissionSelected);
+                    
                     Dpad();
                 }
-
+                
                 //Navigate up the MainMenu
                 if (Input.GetKey(KeyCode.UpArrow) && !pressedArrow)
                 { //&& currentMenu==1 ?

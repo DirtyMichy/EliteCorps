@@ -17,6 +17,13 @@ public class SaveFile
     public SaveFile()
     {
         campaignMissionStatus = new int[MAXMISSIONS];
+
+        //every first mission of each chapter is unlocked by default
+        for (int i = 0; i < MAXMISSIONS; i++)
+        {
+            campaignMissionStatus[i%5] = 1;
+        }
+
         playerChosenCharacter = new int[MAXPLAYERS];
         playerActive = new bool[MAXPLAYERS];
     }
