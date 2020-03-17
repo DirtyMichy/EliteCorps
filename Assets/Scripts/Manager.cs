@@ -81,7 +81,6 @@ public class Manager : MonoBehaviour
 
     public List<Text> ingameScoreGUIText;
     public List<Text> highScoreGUIText;
-    public List<Text> playerActiveText;
     public List<Text> mainMenuGuiText;
 
     public Text objectiveText;
@@ -120,7 +119,7 @@ public class Manager : MonoBehaviour
         secondsLeft = 0;
         objectiveKills = 666;
         objectiveComplete = true;
-        StartCoroutine("showHighScore");
+        ShowHighScore();
     }
 
     public void PlayDeathSound()
@@ -131,6 +130,11 @@ public class Manager : MonoBehaviour
 
     void Awake()
     {
+        if (current == null)
+            current = this;
+        else
+            Destroy(gameObject);
+
         for (int i = 0; i < CanvasScreens[2].transform.GetChild(0).childCount; i++)
         {
             Missions.Add(CanvasScreens[2].transform.GetChild(0).GetChild(i).gameObject);
@@ -190,8 +194,9 @@ public class Manager : MonoBehaviour
             //Count players alive
             if (CountPlayersAlive() == 0 && (!objectiveComplete || bossSpawned))
             {
+                Debug.Log("GameOver");
                 currentMenu = activeMenu.Highscore;
-                StartCoroutine("showHighScore");
+                ShowHighScore();
             }
 
             if (missionMode == missionObjectives.escortAndDefend)
@@ -199,8 +204,9 @@ public class Manager : MonoBehaviour
                 GameObject[] escortPlaneCount = GameObject.FindGameObjectsWithTag("Escort");
                 if (escortPlaneCount.Length == 0 && !objectiveComplete && !bossSpawned)
                 {
+                    Debug.Log("GameOver");
                     currentMenu = activeMenu.Highscore;
-                    StartCoroutine("showHighScore");
+                    ShowHighScore();
                 }
             }
 
@@ -294,8 +300,23 @@ public class Manager : MonoBehaviour
         fadeDirection = -1;
         StartCoroutine("Fade");
 
-        currentMenu = activeMenu.None;
+        //Spawn the playerPlanes
+        for (int i = 0; i < player.Length; i++)
+        {
+            if (playerActive[i])
+            {
+                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.position = new Vector2(1f, 0f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
+                player[i].SendMessage("SetPlayer", (i + 1));
+                player[i].SendMessage("SetPlaneValue", (playerCount));
+            }
+        }
 
+        objectiveComplete = false;
+        spawnManager.GetComponent<EnemyManager>().StartSpawnCoroutines();
+
+        //activeMenu.None check will be used to check inside of Update() if all players are alive, so it needs to be set AFTER the players are spawned
+        currentMenu = activeMenu.None;
+        ShowAndHideCanvas();
         if (gameMode == selectedGameMode.campaign)
         {
             Background.GetComponent<MeshRenderer>().material = BackgroundMaterials[currentMissionSelected / 5];
@@ -383,30 +404,6 @@ public class Manager : MonoBehaviour
         GetComponent<AudioSource>().clip = BattleMusic[Random.Range(1, BattleMusic.Length)];
         GetComponent<AudioSource>().Play();
         StartCoroutine("VolumeOn");
-
-        //Count players at start
-        int playerCount = 0;
-        for (int i = 0; i < player.Length; i++)
-        {
-            if (playerActive[i])
-            {
-                playerCount++;
-            }
-        }
-
-        //Spawn the playerPlanes
-        for (int i = 0; i < player.Length; i++)
-        {
-            if (playerActive[i])
-            {
-                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.position = new Vector2(1f, 0f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
-                player[i].SendMessage("SetPlayer", (i + 1));
-                player[i].SendMessage("SetPlaneValue", (playerCount));
-            }
-        }
-
-        objectiveComplete = false;
-        spawnManager.GetComponent<EnemyManager>().StartSpawnCoroutines();
     }
 
     //Show the missionObjective at start
@@ -497,7 +494,7 @@ public class Manager : MonoBehaviour
                 if (playerAlive.Length > 0 && currentMenu == activeMenu.None && !bossSpawned)
                 {
                     objectiveComplete = true;
-                    StartCoroutine("showHighScore");
+                    ShowHighScore();
                 }
             }
         }
@@ -766,28 +763,34 @@ public class Manager : MonoBehaviour
                     pressedButton = true;
 
                     GoToCharSelection();
-                }
+                }            
 
             //CharacterSelection
             if (currentMenu == activeMenu.CharSelection)
             {
+                GameObject[] charPreviews = GameObject.FindGameObjectsWithTag("CharPreviewer");
+                for (int j = 0; j < charPreviews.Length; j++)
+                {
+                    charPreviews[j].transform.localPosition = new Vector3((0 - 192 * (charPreviews.Length - 1)) + j * 384, 32f, 0f);
+                }
+
                 for (int i = 0; i < player.Length; i++)
                 {
                     playerDpad[i] = GamePad.GetAxis(GamePad.Axis.Dpad, gamePadIndex[i]);
 
-                    if ((GamePad.GetButton(GamePad.Button.A, gamePadIndex[i])) && !playerActive[i])
+                    if (((GamePad.GetButton(GamePad.Button.A, gamePadIndex[i])) && !playerActive[i]) || ((Input.GetKey(KeyCode.A)) && !playerActive[0]))
                     {
                         playerCount++;
                         playerActive[i] = true;
-                        playerActiveText[i].text = "Spieler " + (i + 1) + ": \n Aktiv";
                         PlayerChosenChar[i].SetActive(true);
+                        PlayerChosenChar[i].GetComponentInChildren<Text>().text = "Spieler " + i+1;                      
+
                         UINavigationAudio();
                     }
                     if ((GamePad.GetButton(GamePad.Button.B, gamePadIndex[i])) && playerActive[i])
                     {
                         playerCount--;
                         playerActive[i] = false;
-                        playerActiveText[i].text = "Spieler " + (i + 1) + ": \n Inaktiv";
                         PlayerChosenChar[i].SetActive(false);
                         UINavigationAudio();
                     }
@@ -814,19 +817,19 @@ public class Manager : MonoBehaviour
                 }
 
                 //Keyboard for Player 01
+                /*
                 if ((Input.GetKey(KeyCode.A)) && !playerActive[0])
                 {
                     playerCount++;
                     playerActive[0] = true;
-                    playerActiveText[0].text = "Spieler " + (1) + ": \n Aktiv";
                     PlayerChosenChar[0].SetActive(true);
                     UINavigationAudio();
                 }
+                */
                 if ((Input.GetKey(KeyCode.B)) && playerActive[0])
                 {
                     playerCount--;
                     playerActive[0] = false;
-                    playerActiveText[0].text = "Spieler " + (1) + ": \n Inaktiv";
                     PlayerChosenChar[0].SetActive(false);
                     UINavigationAudio();
                 }
@@ -975,7 +978,7 @@ public class Manager : MonoBehaviour
     {
         iTween.MoveTo(missionMarker, iTween.Hash("position", Missions[currentMissionSelected].transform.position, "easeType", "linear", "time", .5f));
 
-        chosenEpisode.text = "Episode: " + currentMissionSelected / 5 + 1 + "   Mission: " + ((currentMissionSelected % 5) + 1);
+        chosenEpisode.text = "Episode\t" + (currentMissionSelected / 5 + 1) + "\nMission\t" + (currentMissionSelected % 5 + 1);
         missionText.text = "e" + currentMissionSelected / 5 + 1 + "m" + ((currentMissionSelected % 5) + 1);
     }
 
