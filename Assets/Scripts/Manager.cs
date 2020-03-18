@@ -79,7 +79,6 @@ public class Manager : MonoBehaviour
     public GameObject missionMarker;
     public GameObject backGround;
 
-    public List<Text> ingameScoreGUIText;
     public List<Text> highScoreGUIText;
     public List<Text> mainMenuGuiText;
 
@@ -236,14 +235,6 @@ public class Manager : MonoBehaviour
                 objectiveText.text = objectiveKills + "/" + maxObjectiveKills;
             if (missionMode == missionObjectives.reachAndSurvive)
                 objectiveText.text = "" + (secondsLeft * 10) + "KM";
-        }
-
-        //updating ingame score
-        ingameScoreGUIText[0].text = "";
-        for (int i = 0; i < player.Length; i++)
-        {
-            if (player[i] != null)
-                ingameScoreGUIText[i].text += "\n" + (i + 1) + ": " + playerScore[i];
         }
     }
 
