@@ -42,22 +42,11 @@ public class AcquireTarget : MonoBehaviour
 
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * 180 / Mathf.PI + 90, new Vector3(0, 0, 1)), Time.deltaTime * 50f);
 
-                if (GetComponentInParent<Enemy>())
-                    GetComponentInParent<Enemy>().StartShooting();
-
                 float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
 
                 if (distance > range)
                     currentTarget = null;
 
-            }
-            else
-            {
-                if (GetComponentInParent<Enemy>())
-                {
-                    GetComponentInParent<Enemy>().StopShooting();
-                    targetAcquired = false;
-                }
             }
         }
     }

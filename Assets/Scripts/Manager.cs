@@ -312,7 +312,8 @@ public class Manager : MonoBehaviour
         {
             Background.GetComponent<MeshRenderer>().material = BackgroundMaterials[currentMissionSelected / 5];
 
-            //Spawn level
+            //Spawn level if assigned
+            if(missionObject[currentMissionSelected] != null)
             Instantiate(missionObject[currentMissionSelected], missionObject[currentMissionSelected].transform.position, missionObject[currentMissionSelected].transform.rotation);
 
             if (currentMissionSelected == 0)

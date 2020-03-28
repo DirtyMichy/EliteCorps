@@ -60,6 +60,9 @@ public class Player : UnitObject
                 directionCurrent = GamePad.GetAxis(GamePad.Axis.LeftStick, gamePadIndex[i]);
         }
 
+        if ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)) && currentPlayer == 1)
+            directionCurrent = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
         float x = directionCurrent.x;
         float y = directionCurrent.y;
         Vector2 direction = new Vector2(x, y).normalized;

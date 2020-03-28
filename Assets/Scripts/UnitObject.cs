@@ -3,22 +3,19 @@ using System.Collections;
 using GamepadInput;
 public class UnitObject : MonoBehaviour
 {
-    public float speed;
-
-    public GameObject explosion;
-    public GameObject debris;
     public bool canShoot;
     public bool isInvincible = false;
-    public string unitName = "Default";
-    public Animator animator;
+    public float speed;
     public float shieldSeconds = 0;
+    public string unitName = "Default";
+    public GameObject explosion;
+    public GameObject debris;
+    public Animator animator;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
-    }
-
-    
+    }    
 
     protected void Explode()
     {
@@ -29,7 +26,9 @@ public class UnitObject : MonoBehaviour
         else
         {
             if (unitName == "DrillingRig" || unitName == "FlakBunker")
-                Instantiate(debris, transform.position, transform.rotation);
+            {
+                GameObject spawnedDebris = (GameObject)Instantiate(debris, transform.position, transform.rotation);
+            }
             else
                 Instantiate(explosion, transform.position, transform.rotation);
 
