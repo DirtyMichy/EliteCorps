@@ -472,7 +472,7 @@ public class Manager : MonoBehaviour
                 GameObject[] escortPlane = GameObject.FindGameObjectsWithTag("Escort");
                 for (int i = 0; i < escortPlane.Length; i++)
                 {
-                    escortPlane[i].GetComponent<PlayerMulti>().isInvincible = true;
+                    escortPlane[i].GetComponent<Player>().isInvincible = true;
                 }
 
                 if (Missions[currentMissionSelected].GetComponent<Mission>().thisMission == 5 && !bossSpawned)
@@ -537,7 +537,7 @@ public class Manager : MonoBehaviour
                     GameObject[] playerAlive = GameObject.FindGameObjectsWithTag("Player");
                     for (int i = 0; i < playerAlive.Length; i++)
                     {
-                        playerAlive[i].GetComponent<PlayerMulti>().wrap = true;
+                        playerAlive[i].GetComponent<Player>().wrap = true;
                     }
                 }
             }

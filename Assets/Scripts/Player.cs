@@ -3,7 +3,7 @@ using System.Collections;
 using GamepadInput;
 using UnityEngine.UI;
 
-public class PlayerMulti : UnitObject
+public class Player : UnitObject
 {
     public int currentPlayer = 0; //0 == no Player, 1 = Player 1
     public int maxHP = 10;
@@ -18,7 +18,17 @@ public class PlayerMulti : UnitObject
     public TextMesh specialAmmoText;
     public TextMesh playerNumberText;
     private Vector2 directionCurrent;
+    public int localPlayer;
     private GamepadInput.GamePad.Index[] gamePadIndex = { GamePad.Index.One, GamePad.Index.Two, GamePad.Index.Three, GamePad.Index.Four };
+
+    void Awake()
+    {
+        shotPositions = new Transform[transform.childCount];
+        for (int i = 0; i < transform.childCount; i++)
+            shotPositions[i] = transform.GetChild(i);
+
+        animator = GetComponent<Animator>();
+    }
 
     //Setting the playerOwner of this plane from Manager
     public void SetPlaneValue(int playerCount)
@@ -37,37 +47,11 @@ public class PlayerMulti : UnitObject
 
     void Update()
     {
-        if (currentPlayer != 0)
-        {
-
-        }
-
         for (int i = 1; i <= Manager.current.MAXPLAYERS; i++)
         {
             if (currentPlayer == i)
                 directionCurrent = GamePad.GetAxis(GamePad.Axis.LeftStick, gamePadIndex[i]);
         }
-
-        //Getting GamePad input, player 1 can be controlled by keyboard
-        //Vector2 directionCurrent = GamePad.GetAxis(GamePad.Axis.LeftStick, GamePad.Index.One);
-        /*
-
-
-                if (currentPlayer == 1)
-                {
-                    directionCurrent = GamePad.GetAxis(GamePad.Axis.LeftStick, GamePad.Index.One);
-
-                    if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow))
-                        directionCurrent = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-                }
-
-                if (currentPlayer == 2)
-                    directionCurrent = GamePad.GetAxis(GamePad.Axis.LeftStick, GamePad.Index.Two);
-                if (currentPlayer == 3)
-                    directionCurrent = GamePad.GetAxis(GamePad.Axis.LeftStick, GamePad.Index.Three);
-                if (currentPlayer == 4)
-                    directionCurrent = GamePad.GetAxis(GamePad.Axis.LeftStick, GamePad.Index.Four);
-                    */
 
         float x = directionCurrent.x;
         float y = directionCurrent.y;
@@ -106,37 +90,6 @@ public class PlayerMulti : UnitObject
             if (currentPlayer == 1 && ammo > 0 && readyToFire)
                 StartCoroutine("WaitForBullet");
         }
-        /*
-        //Normal bullets
-        if (ammo > 0)
-        {
-            if (currentPlayer == 0)
-            {
-                if (bulletRDY)
-                    StartCoroutine("WaitForBullet");
-            }
-            if (currentPlayer == 1 && (GamePad.GetButton(GamePad.Button.A, GamePad.Index.One) || Input.GetKey(KeyCode.A)))
-            {
-                if (bulletRDY)
-                    StartCoroutine("WaitForBullet");
-            }
-            if (currentPlayer == 2 && GamePad.GetButton(GamePad.Button.A, GamePad.Index.Two))
-            {
-                if (bulletRDY)
-                    StartCoroutine("WaitForBullet");
-            }
-            if (currentPlayer == 3 && GamePad.GetButton(GamePad.Button.A, GamePad.Index.Three))
-            {
-                if (bulletRDY)
-                    StartCoroutine("WaitForBullet");
-            }
-            if (currentPlayer == 4 && GamePad.GetButton(GamePad.Button.A, GamePad.Index.Four))
-            {
-                if (bulletRDY)
-                    StartCoroutine("WaitForBullet");
-            }
-        }
-        */
 
         //Specialweapons
         if (specialAmmo > 0)
@@ -247,6 +200,205 @@ public class PlayerMulti : UnitObject
         }
 
         transform.position = pos;
+    }
+    IEnumerator Shield()
+    {
+        isInvincible = true;
+
+        float shieldAmount = 5f;
+
+        shield.GetComponentInChildren<AudioSource>().mute = false;
+
+        if (shieldSeconds > 0)
+            shieldSeconds += shieldAmount;
+        else
+        {
+            shieldSeconds += shieldAmount;
+
+            while (shieldSeconds > 0)
+            {
+                shield.GetComponentInChildren<SpriteRenderer>().color = new Color(1f, 1f, 1f, shieldSeconds / 10f);
+
+                yield return new WaitForSeconds(1);
+                shieldSeconds--;
+
+            }
+        }
+        if (shieldSeconds <= 0)
+        {
+            isInvincible = false;
+            shield.GetComponentInChildren<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+            shield.GetComponentInChildren<AudioSource>().mute = true;
+        }
+    }
+
+    IEnumerator LineShot()
+    {
+        for (int j = 0; j < 32; j++)
+        {
+            for (int i = 0; i < shotPositions.Length; i++)
+            {
+                if (shotPositions[i].gameObject.tag == "Special")
+                {
+                    GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
+                    lastBullet.SendMessage("SetOwner", localPlayer);
+                }
+            }
+            if (GetComponent<AudioSource>())
+                GetComponent<AudioSource>().Play();
+
+            yield return new WaitForSeconds(shotDelay / 2);
+        }
+    }
+
+    IEnumerator MultiShot()
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            for (int i = 0; i < shotPositions.Length; i++)
+            {
+                if (shotPositions[i].gameObject.tag == "Special" || shotPositions[i].gameObject.tag == "Cannon")
+                {
+                    GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
+                    lastBullet.SendMessage("SetOwner", localPlayer);
+                }
+            }
+
+            if (GetComponent<AudioSource>())
+                GetComponent<AudioSource>().Play();
+
+            yield return new WaitForSeconds(shotDelay * 2);
+        }
+    }
+
+    IEnumerator SprayShot()
+    {
+        int weaponPos = 0;
+
+        //Find SpecialWeapon
+        for (int i = 0; i < shotPositions.Length; i++)
+        {
+            if (shotPositions[i].gameObject.tag == "Special")
+            {
+                weaponPos = i;
+            }
+        }
+
+        Vector3 r = shotPositions[weaponPos].eulerAngles;
+        r.z = -45f;
+
+        for (int j = 0; j < 30; j++)
+        {
+            shotPositions[weaponPos].eulerAngles = r;
+            GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[weaponPos].transform.position, shotPositions[weaponPos].transform.rotation);//new Quaternion(0f,0f,0f,0f));
+            lastBullet.SendMessage("SetOwner", localPlayer);
+            r.z += 3;
+
+            if (GetComponent<AudioSource>())
+                GetComponent<AudioSource>().Play();
+            yield return new WaitForSeconds(shotDelay / 2);
+        }
+    }
+
+    IEnumerator Laser()
+    {
+        for (int i = 0; i < shotPositions.Length; i++)
+        {
+            if (shotPositions[i].gameObject.tag == "Special")
+            {
+                if (shotPositions[i].GetComponent<AudioSource>())
+                    shotPositions[i].GetComponent<AudioSource>().Play();
+                for (int j = 0; j < 60; j++)
+                {
+                    GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
+                    lastBullet.SendMessage("SetOwner", localPlayer);
+                    yield return new WaitForSeconds(shotDelay / 10);
+                }
+            }
+        }
+    }
+
+    IEnumerator Rockets()
+    {
+        for (int i = 0; i < shotPositions.Length; i++)
+        {
+            if (shotPositions[i].gameObject.tag == "Special")
+            {
+                GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
+                lastBullet.SendMessage("SetOwner", localPlayer);
+                yield return new WaitForSeconds(0.25f);
+
+                GameObject secondLastBullet = (GameObject)Instantiate(specialBullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
+                secondLastBullet.SendMessage("SetOwner", localPlayer);
+                yield return new WaitForSeconds(0.25f);
+            }
+        }
+    }
+
+    public void ShootSpecialViaButton(int currentPlayer)
+    {
+        if (unitName == "Char01")
+        {
+            localPlayer = currentPlayer;
+            StartCoroutine("MultiShot");
+        }
+
+        if (unitName == "Char02")
+        {
+            for (int i = 0; i < shotPositions.Length; i++)
+            {
+                if (shotPositions[i].gameObject.tag == "Special")
+                {
+                    GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
+                    lastBullet.SendMessage("SetOwner", currentPlayer);
+                }
+            }
+        }
+
+        if (unitName == "Char03")
+        {
+            localPlayer = currentPlayer;
+            StartCoroutine("Rockets");
+        }
+
+        if (unitName == "Char04")
+        {
+            StartCoroutine("Shield");
+        }
+
+        if (unitName == "Char05")
+        {
+            localPlayer = currentPlayer;
+            StartCoroutine("SprayShot");
+        }
+
+        if (unitName == "Char06")
+        {
+            localPlayer = currentPlayer;
+            StartCoroutine("Laser");
+        }
+
+        if (unitName == "Char07")
+        {
+            localPlayer = currentPlayer;
+            StartCoroutine("LineShot");
+        }
+    }
+
+    public void ShootViaButton(int currentPlayer)
+    {
+        if (GetComponent<AudioSource>())
+            GetComponent<AudioSource>().Play();
+
+        for (int i = 0; i < shotPositions.Length; i++)
+        {
+            if (shotPositions[i].gameObject.tag == "Cannon")
+            {
+                GameObject lastBullet = (GameObject)Instantiate(bullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
+                lastBullet.SendMessage("SetOwner", currentPlayer);
+            }
+        }
+
     }
 
     void OnTriggerEnter2D(Collider2D c)

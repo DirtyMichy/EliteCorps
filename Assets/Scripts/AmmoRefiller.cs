@@ -22,12 +22,12 @@ public class AmmoRefiller : MonoBehaviour
 
             for (int i = 0; i < playerAlive.Length; i++)
             {
-                if (playerAlive[i].GetComponent<PlayerMulti>())
+                if (playerAlive[i].GetComponent<Player>())
                 {
-                    playerAlive[i].GetComponent<PlayerMulti>().ammo++;
+                    playerAlive[i].GetComponent<Player>().ammo++;
                     if (gameTimeSeconds % 60 == 0)
-                        playerAlive[i].GetComponent<PlayerMulti>().specialAmmo++;
-                    playerAlive[i].GetComponent<PlayerMulti>().AmmoUIUpdate();
+                        playerAlive[i].GetComponent<Player>().specialAmmo++;
+                    playerAlive[i].GetComponent<Player>().AmmoUIUpdate();
                 }
             }
             yield return new WaitForSeconds(1f);
