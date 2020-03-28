@@ -556,6 +556,7 @@ public class Manager : MonoBehaviour
         switch (currentMenu)
         {
             case activeMenu.None:
+                CanvasScreens[5].SetActive(true);
                 break;
             case activeMenu.TitleScreen:
                 CanvasScreens[0].SetActive(true);
@@ -971,7 +972,7 @@ public class Manager : MonoBehaviour
         iTween.MoveTo(missionMarker, iTween.Hash("position", Missions[currentMissionSelected].transform.position, "easeType", "linear", "time", .5f));
 
         chosenEpisode.text = "Episode\t" + (currentMissionSelected / 5 + 1) + "\nMission\t" + (currentMissionSelected % 5 + 1);
-        missionText.text = "e" + currentMissionSelected / 5 + 1 + "m" + ((currentMissionSelected % 5) + 1);
+        missionText.text = "E" + currentMissionSelected / 5 + 1 + "M" + ((currentMissionSelected % 5) + 1);
     }
 
     //Navigating to the main menu

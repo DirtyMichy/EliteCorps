@@ -25,6 +25,7 @@ public class Enemy : UnitObject
 
         if (isBoss)
         {
+            //the more players, the more hitPoints the boss will have
             GameObject[] playerAlive = GameObject.FindGameObjectsWithTag("Player");
             if (playerAlive.Length > 0)
                 maxHP = maxHP * playerAlive.Length;
@@ -107,9 +108,7 @@ public class Enemy : UnitObject
         if (currentHP <= 0 && !isDying)
         {
             isDying = true;
-
             currentHP = 0;
-
             Manager.current.AddPoint(point, obj.owner, isObjective);
 
             //spawn powerUp
