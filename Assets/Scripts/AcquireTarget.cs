@@ -7,6 +7,7 @@ public class AcquireTarget : MonoBehaviour
     public GameObject currentTarget = null;
     public float rotationSpeed = 10f;
     public float range = 8f;
+    public bool targetAcquired = false;
 
     // Update is called once per frame
     void Update()
@@ -31,7 +32,7 @@ public class AcquireTarget : MonoBehaviour
                 {
                     currentTarget = player;
                     minimalEnemyDistance = distance;
-                    GetComponentInParent<Enemy>().targetAcquired = true;
+                    targetAcquired = true;
                 }
             }
 
@@ -55,7 +56,7 @@ public class AcquireTarget : MonoBehaviour
                 if (GetComponentInParent<Enemy>())
                 {
                     GetComponentInParent<Enemy>().StopShooting();
-                    GetComponentInParent<Enemy>().targetAcquired = false;
+                    targetAcquired = false;
                 }
             }
         }

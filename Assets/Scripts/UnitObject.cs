@@ -4,19 +4,12 @@ using GamepadInput;
 public class UnitObject : MonoBehaviour
 {
     public float speed;
-    public float shotDelay;
-    public bool isInvincible = false;
-    public GameObject bullet;
-    public GameObject specialBullet;
-    public GameObject rocket;
+
     public GameObject explosion;
     public GameObject debris;
     public bool canShoot;
+    public bool isInvincible = false;
     public string unitName = "Default";
-    public int bulletsPerShot = 1;
-    public GameObject shield;
-    public Transform[] shotPositions;
-    public Transform[] shotSpecialPositions;
     public Animator animator;
     public float shieldSeconds = 0;
 

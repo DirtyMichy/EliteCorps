@@ -26,7 +26,7 @@ public class Enemy : UnitObject
         if (canShoot && !firingStarted)
         {
             firingStarted = true;
-            StartCoroutine("Shoot");
+            //("Shoot");
         }
     }
 
@@ -34,7 +34,7 @@ public class Enemy : UnitObject
     public void StopShooting()
     {
         firingStarted = false;
-        StopCoroutine("Shoot");
+        //StopCoroutine("Shoot");
     }
 
     //Setting up hp and behaviour
@@ -148,6 +148,7 @@ public class Enemy : UnitObject
             if (collision.GetComponent<Player>().unitName == "EscortPlane")
                 GetComponent<Rigidbody2D>().AddForce(transform.right);
     }
+    /*
     IEnumerator Shoot()
     {
         Vector2 min = new Vector2(0, 0);
@@ -216,6 +217,8 @@ public class Enemy : UnitObject
             }
         }
     }
+    */
+
     void OnTriggerEnter2D(Collider2D c)
     {
         string layerName = LayerMask.LayerToName(c.gameObject.layer);

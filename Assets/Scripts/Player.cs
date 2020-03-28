@@ -9,7 +9,14 @@ public class Player : UnitObject
     public int maxHP = 10;
     public int currentHP;
     public int ammo = 128;
-    public int specialAmmo = 1;
+    public int specialAmmo = 1; public float shotDelay;
+    public int bulletsPerShot = 1;
+    public GameObject shield;
+    public Transform[] shotPositions;
+    public Transform[] shotSpecialPositions;
+    public GameObject bullet;
+    public GameObject specialBullet;
+    public GameObject rocket;
     private bool readyToFire = true;
     private bool specialRDY = true;
     public bool wrap = false; //wrap means you can fly off the screen and return on the other side
