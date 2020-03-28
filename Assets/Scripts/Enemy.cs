@@ -100,23 +100,6 @@ public class Enemy : UnitObject
         {
             speed = 0f;
             GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * speed;
-
-            //when the shipBoss spawnst, all isles have to stop moving
-            GameObject[] props = GameObject.FindGameObjectsWithTag("Island");
-            for (int i = 0; i < props.Length; i++)
-            {
-                if (props[i].GetComponent<Props>())
-                {
-                    props[i].GetComponent<Props>().speed = 0f;
-                    props[i].GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * 0f;
-                }
-                if (props[i].GetComponentInChildren<Props>())
-                {
-                    props[i].GetComponentInChildren<Props>().speed = 0f;
-                    if (props[i].GetComponentInChildren<Rigidbody2D>())
-                        props[i].GetComponentInChildren<Rigidbody2D>().velocity = (transform.up * -1) * 0f;
-                }
-            }
         }
     }
     //Is called when a bossTurret gets destroyed
@@ -162,7 +145,7 @@ public class Enemy : UnitObject
                     currentHP -= obj.damage;
             }
         }
-        //Setting the healthbar for the bos
+        //Setting the healthbar for the boss
         if (isBoss)
         {
             bossHealth.transform.localScale = new Vector3(100f / maxHP * currentHP / 100f, bossHealth.transform.localScale.y, bossHealth.transform.localScale.z);
