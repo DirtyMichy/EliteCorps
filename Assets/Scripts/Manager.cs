@@ -30,7 +30,7 @@ public class Manager : MonoBehaviour
     public int requiredObjectivesToKill = 2;
     private int MAXSECONDS = 128;
     public int MAXPLAYERS = 4;
-    private int requiredKillsToWin = 64;
+    public int requiredKillsToWin = 64;
     public int currentMainMenuSelection = 0;        //Used for iteration with arrow keys oder dpad inside the main menu
     public int currentMissionSelected = 0;         //Used for iteration with arrow keys oder dpad inside the mission menu
     public int kills = 0;
