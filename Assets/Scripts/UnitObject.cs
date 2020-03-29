@@ -3,7 +3,6 @@ using System.Collections;
 using GamepadInput;
 public class UnitObject : MonoBehaviour
 {
-    public bool canShoot;
     public bool isInvincible = false;
     public float speed;
     public float shieldSeconds = 0;

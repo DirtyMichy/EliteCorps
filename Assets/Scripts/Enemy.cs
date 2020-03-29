@@ -29,7 +29,8 @@ public class Enemy : UnitObject
             GameObject[] playerAlive = GameObject.FindGameObjectsWithTag("Player");
             if (playerAlive.Length > 0)
                 maxHP = maxHP * playerAlive.Length;
-
+            GameObject bossCanvas = GameObject.Find("BossHealth");
+            bossHealth = (RectTransform)bossCanvas.transform;
             currentHP = maxHP;
             bossHealth.transform.localScale = new Vector3(100f / maxHP * currentHP / 100f, bossHealth.transform.localScale.y, bossHealth.transform.localScale.z);
         }
@@ -51,7 +52,6 @@ public class Enemy : UnitObject
             speed = 0f;
             GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * speed;
             firingStarted = false;
-            canShoot = true;
         }
 
         //Stop Scene (Background, Props,...) from moving, put this in an extra script

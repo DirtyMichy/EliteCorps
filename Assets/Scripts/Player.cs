@@ -89,13 +89,7 @@ public class Player : UnitObject
 
         for (int i = 0; i <= Manager.current.MAXPLAYERS; i++)
         {
-            if (currentPlayer == i && ammo > 0 && readyToFire && (GamePad.GetButton(GamePad.Button.A, gamePadIndex[i]) || currentPlayer == 0))
-                StartCoroutine("WaitForBullet");
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            if (currentPlayer == 1 && ammo > 0 && readyToFire)
+            if (currentPlayer == i && ammo > 0 && readyToFire && (GamePad.GetButton(GamePad.Button.A, gamePadIndex[i]) || (Input.GetKey(KeyCode.A) && (currentPlayer == 0))))
                 StartCoroutine("WaitForBullet");
         }
 
@@ -281,30 +275,26 @@ public class Player : UnitObject
 
     IEnumerator SprayShot()
     {
-        int weaponPos = 0;
-
         //Find SpecialWeapon
         for (int i = 0; i < shotPositions.Length; i++)
         {
             if (shotPositions[i].gameObject.tag == "Special")
             {
-                weaponPos = i;
+                Vector3 r = shotPositions[i].eulerAngles;
+                r.z = -45f;
+
+                for (int j = 0; j < 30; j++)
+                {
+                    shotPositions[i].eulerAngles = r;
+                    GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);//new Quaternion(0f,0f,0f,0f));
+                    lastBullet.SendMessage("SetOwner", localPlayer);
+                    r.z += 3;
+
+                    if (GetComponent<AudioSource>())
+                        GetComponent<AudioSource>().Play();
+                    yield return new WaitForSeconds(shotDelay / 4);
+                }
             }
-        }
-
-        Vector3 r = shotPositions[weaponPos].eulerAngles;
-        r.z = -45f;
-
-        for (int j = 0; j < 30; j++)
-        {
-            shotPositions[weaponPos].eulerAngles = r;
-            GameObject lastBullet = (GameObject)Instantiate(specialBullet, shotPositions[weaponPos].transform.position, shotPositions[weaponPos].transform.rotation);//new Quaternion(0f,0f,0f,0f));
-            lastBullet.SendMessage("SetOwner", localPlayer);
-            r.z += 3;
-
-            if (GetComponent<AudioSource>())
-                GetComponent<AudioSource>().Play();
-            yield return new WaitForSeconds(shotDelay / 2);
         }
     }
 

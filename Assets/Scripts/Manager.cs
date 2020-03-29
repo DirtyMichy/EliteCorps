@@ -518,6 +518,8 @@ public class Manager : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
             }
 
+            CanvasScreens[5].SetActive(true);
+
             GetComponent<AudioSource>().clip = BattleMusic[0];
             GetComponent<AudioSource>().Play();
             GetComponent<AudioSource>().volume = 100f;

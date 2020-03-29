@@ -71,8 +71,8 @@ public class Weapon : MonoBehaviour
                         if (GetComponent<AudioSource>())
                             GetComponent<AudioSource>().Play();
                     }
+                    yield return new WaitForSeconds(timeBetweenBulletShots);
                 }
-                yield return new WaitForSeconds(timeBetweenBulletShots);
             }
             yield return new WaitForSeconds(firingSpeed + Random.Range(0, randomizedFiringDelay));
         }
