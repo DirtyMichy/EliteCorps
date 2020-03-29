@@ -118,9 +118,11 @@ public class Enemy : UnitObject
                 Instantiate(powerUp, transform.position, transform.rotation);
 
             Explode();
-
+             
             if (isBoss)
             {
+                StartCoroutine("BossExplosion");
+                
                 Manager.current.objectiveComplete = true;
                 Manager.current.ShowHighScore();
             }
@@ -135,5 +137,27 @@ public class Enemy : UnitObject
         //Buildings stay as debris
         if (unitName != "DrillingPitDestroyed" && unitName != "BunkerDebris")
             obj.Die();
+    }
+
+    IEnumerator BossExplosion()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            animator.SetTrigger("Damage");
+
+            for (int j = 0; j < 2; j++)
+            {
+                Vector3 pos = transform.position;
+                pos.x += Random.Range(-5, 5);
+                pos.y += Random.Range(-0.5f, 0.5f);
+
+                Quaternion rot = transform.rotation;
+                rot.z = Random.Range(0f, 360f);
+
+                Instantiate(explosion, pos, rot);
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+        Destroy(gameObject);
     }
 }

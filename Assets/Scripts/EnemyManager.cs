@@ -12,7 +12,6 @@ public class EnemyManager : MonoBehaviour
     public GameObject[] e1Enemies;
     public GameObject[] e2Enemies;
     public GameObject[] objectives;
-    public GameObject[] extraObjectives;
 
     public void Start()
     {
@@ -38,7 +37,7 @@ public class EnemyManager : MonoBehaviour
     {
         if (seconds % 30 == 0)
             maxRngForWaves = Mathf.Clamp((int)(maxRngForWaves + 1), 0, waveEnemies.Length);
-        int rng = Random.Range(0, maxRngForWaves); //-1
+        int rng = Random.Range(0+(maxRngForWaves/4), maxRngForWaves); //-1
 
         Instantiate(waveEnemies[rng], waveEnemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), waveEnemies[rng].transform.rotation);
     }
@@ -56,7 +55,7 @@ public class EnemyManager : MonoBehaviour
             if (Manager.current.gameMode == Manager.selectedGameMode.campaign)
             {
                 missionSpawns();
-                yield return new WaitForSeconds(6f);
+                yield return new WaitForSeconds(20/Manager.current.playerCount);
             }
 
             if (Manager.current.gameMode == Manager.selectedGameMode.survive)
@@ -75,21 +74,12 @@ public class EnemyManager : MonoBehaviour
         max = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
 
         float spawnPosition = 0;
+        float screenWidth = Mathf.Abs(min.x) + max.x;
 
         if (Manager.current.missionMode == Manager.missionObjectives.killObjective)
         {
             //Spawning additional Objectives, if you missed the objective another one should spawn faster
-            if (Manager.current.currentMissionSelected == 0 && Manager.current.objectiveKills < 4 && (seconds % campaingObjectiveSpawn) == 0)
-            {
-                Instantiate(extraObjectives[0], extraObjectives[0].transform.position = new Vector2(0f, 10f), extraObjectives[0].transform.rotation);
-                campaingObjectiveSpawn = 5; 
-            }
-            if (Manager.current.currentMissionSelected == 2 && Manager.current.objectiveKills < 1 && (seconds % campaingObjectiveSpawn == 0))
-            {
-                Instantiate(objectives[0], objectives[0].transform.position = new Vector2(0f, 10f), objectives[0].transform.rotation);
-                campaingObjectiveSpawn = 20; 
-            }
-            if (Manager.current.currentMissionSelected == 8 && Manager.current.objectiveKills < 3 && (seconds % campaingObjectiveSpawn / 2f == 0))
+            if (Manager.current.objectiveKills < Manager.current.requiredObjectivesToKill && (seconds % campaingObjectiveSpawn == 0))
             {
                 Instantiate(objectives[1], objectives[1].transform.position = new Vector2(0f, 10f), objectives[1].transform.rotation);
                 campaingObjectiveSpawn = 20;
@@ -100,13 +90,10 @@ public class EnemyManager : MonoBehaviour
 
         if (Manager.current.currentMissionSelected < 5)
         {
-            //0-4 EasyPlane,AttackBoat,SmallPlane,SpyPlane,FlakShip
-            float screenWidth = Mathf.Abs(min.x) + max.x;
-
             if (Manager.current.currentMissionSelected == 0)
             {
                 int rng = Random.Range(0, 3); //-1
-                if (rng == 0) //7 Planes
+                if (rng == 0)
                     for (int i = 0; i < 7; i++)
                     {
                         spawnPosition = -6f + 2f * i; //FullscreenSpawn

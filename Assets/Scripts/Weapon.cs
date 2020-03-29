@@ -54,19 +54,13 @@ public class Weapon : MonoBehaviour
                 {
                     if (GetComponent<AcquireTarget>())
                     {
-                        //Units with targetacquiring have cannons with GunOutPuts
+                        //Units with target acquiring should only shoot when a target is acquired
                         if (GetComponent<AcquireTarget>().currentTarget != null && GetComponent<AcquireTarget>().targetAcquired)
                         {
-                            //targeting Fire points have gunOutPuts where the bullet spawns - this isn't global defined because an enemy can have multiple targeting guns (Boss01)                            
-                            for (int l = 0; l < transform.childCount; l++)
-                            {
-                                if (GetComponent<AudioSource>())
-                                    GetComponent<AudioSource>().Play();
+                            Instantiate(bullet, shotPositions[i].transform.position, shotPositions[i].transform.rotation);
 
-                                Instantiate(bullet, transform.GetChild(l).transform.position, transform.GetChild(l).transform.rotation);
-
-                                yield return new WaitForSeconds(0.1f);
-                            }
+                            if (GetComponent<AudioSource>())
+                                GetComponent<AudioSource>().Play();
                         }
                     }
                     else

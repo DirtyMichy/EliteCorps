@@ -27,10 +27,10 @@ public class Manager : MonoBehaviour
 
     private bool bossSpawned = false;
     public bool objectiveComplete = true;
-    private int maxObjectiveKills = 2;
+    public int requiredObjectivesToKill = 2;
     private int MAXSECONDS = 128;
     public int MAXPLAYERS = 4;
-    private int maxKills = 64;
+    private int requiredKillsToWin = 64;
     public int currentMainMenuSelection = 0;        //Used for iteration with arrow keys oder dpad inside the main menu
     public int currentMissionSelected = 0;         //Used for iteration with arrow keys oder dpad inside the mission menu
     public int kills = 0;
@@ -228,11 +228,11 @@ public class Manager : MonoBehaviour
         if (gameMode == selectedGameMode.campaign)
         {
             if (missionMode == missionObjectives.killAll)
-                objectiveText.text = kills + "/" + maxKills;
+                objectiveText.text = kills + "/" + requiredKillsToWin;
             if (missionMode == missionObjectives.escortAndDefend)
                 objectiveText.text = "" + secondsLeft;
             if (missionMode == missionObjectives.killObjective)
-                objectiveText.text = objectiveKills + "/" + maxObjectiveKills;
+                objectiveText.text = objectiveKills + "/" + requiredObjectivesToKill;
             if (missionMode == missionObjectives.reachAndSurvive)
                 objectiveText.text = "" + (secondsLeft * 10) + "KM";
         }
@@ -292,11 +292,11 @@ public class Manager : MonoBehaviour
         StartCoroutine("Fade");
 
         //Spawn the playerPlanes
-        for (int i = 0; i < player.Length; i++)
+        for (int i = 0; i < playerCount; i++)
         {
             if (playerActive[i])
             {
-                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.position = new Vector2(1f, 0f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
+                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], new Vector2((1-playerCount)+(i*2), -4f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
                 player[i].SendMessage("SetPlayer", (i + 1));
                 player[i].SendMessage("SetPlaneValue", (playerCount));
             }
@@ -318,9 +318,9 @@ public class Manager : MonoBehaviour
 
             if (currentMissionSelected == 0)
             {
-                maxObjectiveKills = 4;
-                missionMode = missionObjectives.killAll;
-                ObjectiveIntroText.text = "Zerstöre alle Flaks";
+                requiredObjectivesToKill = 4;
+                missionMode = missionObjectives.killObjective;
+                ObjectiveIntroText.text = "Zerstöre alle Bunker";
             }
             if (currentMissionSelected == 1)
             {
@@ -332,7 +332,7 @@ public class Manager : MonoBehaviour
             }
             if (currentMissionSelected == 2)
             {
-                maxObjectiveKills = 1;
+                requiredObjectivesToKill = 1;
                 missionMode = missionObjectives.killObjective;
                 ObjectiveIntroText.text = "Zerstöre die Bohrinsel";
             }
@@ -369,7 +369,7 @@ public class Manager : MonoBehaviour
             }
             if (currentMissionSelected == 8)
             {
-                maxObjectiveKills = 3;
+                requiredObjectivesToKill = 3;
                 missionMode = missionObjectives.killObjective;
                 ObjectiveIntroText.text = "Zerstöre alle Transporter";
             }
@@ -465,10 +465,12 @@ public class Manager : MonoBehaviour
     {
         if (!objectiveComplete)
         {
-            if ((missionMode == missionObjectives.killAll && kills >= maxKills)
+            if (
+                               (missionMode == missionObjectives.killAll && kills >= requiredKillsToWin)
                             || (missionMode == missionObjectives.reachAndSurvive && secondsLeft <= 0)
-                            || (missionMode == missionObjectives.killObjective && objectiveKills >= maxObjectiveKills)
-                            || (missionMode == missionObjectives.escortAndDefend && secondsLeft <= 0))
+                            || (missionMode == missionObjectives.killObjective && objectiveKills >= requiredObjectivesToKill)
+                            || (missionMode == missionObjectives.escortAndDefend && secondsLeft <= 0)
+               )
             {
                 GameObject[] escortPlane = GameObject.FindGameObjectsWithTag("Escort");
                 for (int i = 0; i < escortPlane.Length; i++)
@@ -972,7 +974,7 @@ public class Manager : MonoBehaviour
         iTween.MoveTo(missionMarker, iTween.Hash("position", Missions[currentMissionSelected].transform.position, "easeType", "linear", "time", .5f));
 
         chosenEpisode.text = "Episode\t" + (currentMissionSelected / 5 + 1) + "\nMission\t" + (currentMissionSelected % 5 + 1);
-        missionText.text = "E" + currentMissionSelected / 5 + 1 + "M" + ((currentMissionSelected % 5) + 1);
+        missionText.text = "E" + (currentMissionSelected / 5 + 1) + "M" + ((currentMissionSelected % 5) + 1);
     }
 
     //Navigating to the main menu
