@@ -8,10 +8,11 @@ public class EnemyManager : MonoBehaviour
     private int maxRngForWaves = 2;
     public int seconds = 0;
     public GameObject[] bosses;
-    public GameObject[] waveEnemies;
+    public GameObject[] enemies;
     public GameObject[] e1Enemies;
     public GameObject[] e2Enemies;
     public GameObject[] objectives;
+    private GameObject objectiveToKill;
 
     public void Start()
     {
@@ -22,6 +23,21 @@ public class EnemyManager : MonoBehaviour
     public void StartSpawnCoroutines()
     {
         StartCoroutine("Spawn");
+
+        switch (Manager.current.currentMissionSelected)
+        {
+            case 0:
+                objectiveToKill = objectives[2];
+                break;
+            case 2:
+                objectiveToKill = objectives[0];
+                break;
+            case 8:
+                objectiveToKill = objectives[1];
+                break;
+            default:
+                break;
+        }
 
         campaingObjectiveSpawn = 30;
         maxRngForWaves = 2;
@@ -36,10 +52,10 @@ public class EnemyManager : MonoBehaviour
     void Waves()
     {
         if (seconds % 30 == 0)
-            maxRngForWaves = Mathf.Clamp((int)(maxRngForWaves + 1), 0, waveEnemies.Length);
+            maxRngForWaves = Mathf.Clamp((int)(maxRngForWaves + 1), 0, enemies.Length);
         int rng = Random.Range(0+(maxRngForWaves/4), maxRngForWaves); //-1
 
-        Instantiate(waveEnemies[rng], waveEnemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), waveEnemies[rng].transform.rotation);
+        Instantiate(enemies[rng], enemies[rng].transform.position = new Vector2(Random.Range(min.x + 1, max.x - 1), 8f), enemies[rng].transform.rotation);
     }
 
     public void spawnBoss(int bossNumber)
@@ -92,33 +108,11 @@ public class EnemyManager : MonoBehaviour
         {
             if (Manager.current.currentMissionSelected == 0)
             {
-                int rng = Random.Range(0, 3); //-1
-                if (rng == 0)
                     for (int i = 0; i < 7; i++)
                     {
                         spawnPosition = -6f + 2f * i; //FullscreenSpawn
 
                         Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e1Enemies[0].transform.rotation);
-                    }
-                if (rng == 1)
-                { //7 Planes V Formation
-                    Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(0f, 8f), e1Enemies[0].transform.rotation);
-
-                    Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(-2f, 8.5f), e1Enemies[0].transform.rotation);
-                    Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(2f, 8.5f), e1Enemies[0].transform.rotation);
-
-                    Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(-4f, 9f), e1Enemies[0].transform.rotation);
-                    Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(4f, 9f), e1Enemies[0].transform.rotation);
-
-                    Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(-6f, 9.5f), e1Enemies[0].transform.rotation);
-                    Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(6f, 9.5f), e1Enemies[0].transform.rotation);
-                }
-                if (rng == 2) //3x2 Planes
-                    for (int i = 0; i < 3; i++)
-                    {
-                        spawnPosition = -3f + 3f * i;
-                        Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[0].transform.rotation);
-                        Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(spawnPosition, 11f), e1Enemies[0].transform.rotation);
                     }
             }
 

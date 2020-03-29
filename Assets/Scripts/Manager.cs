@@ -96,9 +96,7 @@ public class Manager : MonoBehaviour
 
     public GameObject explosion;
     public GameObject spawnManager;
-    public GameObject objective;
-    public GameObject Cloud;
-    public GameObject isle;
+    //public GameObject objective;
     public Material[] BackgroundMaterials;
     public GameObject Background;
     public GameObject escortPlane;
