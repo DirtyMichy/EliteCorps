@@ -10,12 +10,7 @@ public class UnitObject : MonoBehaviour
     public string unitName = "Default";
     public GameObject explosion;
     public GameObject debris;
-    public Animator animator;
 
-    void Awake()
-    {
-        animator = GetComponent<Animator>();
-    }
     protected void Explode()
     {
         Instantiate(explosion, transform.position, transform.rotation);

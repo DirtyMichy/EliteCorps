@@ -16,7 +16,7 @@ public class Enemy : UnitObject
     public GameObject powerUp;          //if this isn't null, the enemy can drop a powerUp
     private bool isDying = false;       //some enemies have a dyingtimer, if shot they would award multiple times the pointvalue
 
-    void OnEnable()
+    void Awake()
     {
         if (unitName == "MinigunCopter" || unitName == "Friendly")
         {
@@ -36,11 +36,10 @@ public class Enemy : UnitObject
         else
             currentHP = maxHP;
 
-        //Special behaviour for Bosss02
-        if (unitName == "Boss02")
-            if (GetComponent<Rigidbody2D>())
+        if (GetComponent<Rigidbody2D>())
+            if (unitName == "Boss02")
                 GetComponent<Rigidbody2D>().velocity = (transform.up) * speed;
-            else if (GetComponent<Rigidbody2D>())
+            else 
                 GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * speed;
     }
 
@@ -111,7 +110,6 @@ public class Enemy : UnitObject
             currentHP = 0;
             Manager.current.AddPoint(point, obj.owner, isObjective);
 
-            //spawn powerUp
             int rng = Random.Range(0, 100 / chanceToSpawnPowerUp);
 
             if (powerUp && rng == 0 && powerUp != null)
@@ -131,7 +129,7 @@ public class Enemy : UnitObject
         {
             //play the damaged animation, debris is being ignored
             if (unitName != "DrillingPitDestroyed" && unitName != "BunkerDebris")
-                animator.SetTrigger("Damage");
+                GetComponent<Animator>().SetTrigger("Damage");
         }
 
         //Buildings stay as debris
@@ -143,7 +141,7 @@ public class Enemy : UnitObject
     {
         for (int i = 0; i < 10; i++)
         {
-            animator.SetTrigger("Damage");
+            GetComponent<Animator>().SetTrigger("Damage");
 
             for (int j = 0; j < 2; j++)
             {

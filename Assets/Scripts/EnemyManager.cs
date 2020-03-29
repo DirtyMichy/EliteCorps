@@ -9,6 +9,7 @@ public class EnemyManager : MonoBehaviour
     public int seconds = 0;
     public GameObject[] bosses;
     public GameObject[] enemies;
+    public GameObject[] enemyBlobs;
     public GameObject[] e1Enemies;
     public GameObject[] e2Enemies;
     public GameObject[] objectives;
@@ -24,24 +25,28 @@ public class EnemyManager : MonoBehaviour
     {
         StartCoroutine("Spawn");
 
+        //global seetings
+        maxRngForWaves = 2;
+        seconds = 20;
+
+        //Level specific settings
         switch (Manager.current.currentMissionSelected)
         {
             case 0:
+                campaingObjectiveSpawn = 15;
                 objectiveToKill = objectives[2];
                 break;
             case 2:
+                campaingObjectiveSpawn = 30;
                 objectiveToKill = objectives[0];
                 break;
             case 8:
+                campaingObjectiveSpawn = 20;
                 objectiveToKill = objectives[1];
                 break;
             default:
                 break;
         }
-
-        campaingObjectiveSpawn = 30;
-        maxRngForWaves = 2;
-        seconds = 20;
     }
 
     public void StopSpawnCoroutines()
@@ -108,35 +113,14 @@ public class EnemyManager : MonoBehaviour
         {
             if (Manager.current.currentMissionSelected == 0)
             {
-                    for (int i = 0; i < 7; i++)
-                    {
-                        spawnPosition = -6f + 2f * i; //FullscreenSpawn
-
-                        Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e1Enemies[0].transform.rotation);
-                    }
+                Instantiate(enemyBlobs[0], enemyBlobs[0].transform.position, enemyBlobs[0].transform.rotation);
             }
 
             if (Manager.current.currentMissionSelected == 1)
             {
-                int rng = Random.Range(0, 2); //-1
-                if (rng == 0) //5 Planes
-                    for (int i = 0; i < 5; i++)
-                    {
-                        Instantiate(e1Enemies[0], e1Enemies[0].transform.position = new Vector2(spawnPosition, 0f + 8f), e1Enemies[0].transform.rotation);
-
-                        if (i % 2 == 0)
-                            spawnPosition = (spawnPosition + 2);
-
-                        spawnPosition *= -1;
-                    }
-                if (rng == 1) //3x2 Boats
-                    for (int i = 0; i < 3; i++)
-                    {
-                        spawnPosition = -3f + 3f * i;
-                        Instantiate(e1Enemies[1], e1Enemies[1].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[1].transform.rotation);
-                        Instantiate(e1Enemies[1], e1Enemies[1].transform.position = new Vector2(spawnPosition, 11f), e1Enemies[1].transform.rotation);
-                    }
+                Instantiate(enemyBlobs[Random.Range(0, 2)], enemyBlobs[1].transform.position, enemyBlobs[1].transform.rotation);
             }
+
             if (Manager.current.currentMissionSelected == 2)
             {
                 int rng = Random.Range(0, 3); //-1

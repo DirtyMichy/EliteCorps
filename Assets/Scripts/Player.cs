@@ -33,8 +33,6 @@ public class Player : UnitObject
         shotPositions = new Transform[transform.childCount];
         for (int i = 0; i < transform.childCount; i++)
             shotPositions[i] = transform.GetChild(i);
-
-        animator = GetComponent<Animator>();
     }
 
     //Setting the playerOwner of this plane from Manager
@@ -430,7 +428,7 @@ public class Player : UnitObject
             }
             else
             {
-                animator.SetTrigger("Damage");
+                GetComponent<Animator>().SetTrigger("Damage");
             }
         }
 
