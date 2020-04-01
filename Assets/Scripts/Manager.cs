@@ -87,21 +87,21 @@ public class Manager : MonoBehaviour
     public Text ObjectiveIntroText;      //put this into a seperate script???
     public Text chosenEpisode; //put this into a seperate script???
 
-    public string missionName = "";    //Current Mission like E1M1
+    public string missionName = "";
     private string[] mainMenuText = { "✠ Überleben ✠", "✠ Mission ✠", "✠ Beenden ✠" };
     public Sprite[] CharPreviews;
-    public Sprite logoSprite, menuSprite, victorySprite, loseSprite, worldMap, MissionSpriteA, MissionSpriteB, MissionSpriteC;
+    public Sprite logoSprite, menuSprite, victorySprite, loseSprite, worldMap;
+    public Sprite[] MissionSprites;
 
     [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Gameplay ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
 
     public GameObject explosion;
     public GameObject spawnManager;
-    //public GameObject objective;
-    public Material[] BackgroundMaterials;
     public GameObject Background;
     public GameObject escortPlane;
     public GameObject escortShip;
     public GameObject powerUp;
+    public Material[] BackgroundMaterials;
 
     [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Audio ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
 
@@ -148,15 +148,11 @@ public class Manager : MonoBehaviour
             SaveLoad.Load();
             SaveFile.current = SaveLoad.savedGames[0];
 
+            //0 locked, 1 unlocked, 2 won
             for (int i = 0; i < Missions.Count; i++)
             {
                 Missions[i].GetComponent<Mission>().status = SaveFile.current.campaignMissionStatus[i];
-
-                //maybe put this logic into the mission prefab?
-                if (Missions[i].GetComponent<Mission>().status == 1)
-                    Missions[i].GetComponent<SpriteRenderer>().sprite = MissionSpriteC;
-                if (Missions[i].GetComponent<Mission>().status == 2)
-                    Missions[i].GetComponent<SpriteRenderer>().sprite = MissionSpriteB;
+                Missions[i].GetComponent<SpriteRenderer>().sprite = MissionSprites[Missions[i].GetComponent<Mission>().status];
             }
         }
 
