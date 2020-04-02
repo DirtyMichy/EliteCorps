@@ -73,7 +73,7 @@ public class Manager : MonoBehaviour
     [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Canvas ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
 
     public GameObject[] CanvasScreens;
-    private int fadeDirection = -1;  //-1 fadeIn (transparent), 1 fadeOut (darken)
+    private int fadeDirection = -1;         //-1 fadeIn (transparent), 1 fadeOut (darken)
     private bool fadeFinished = false;
     public GameObject fader;
     public GameObject missionMarker;
@@ -83,9 +83,9 @@ public class Manager : MonoBehaviour
     public List<Text> mainMenuGuiText;
 
     public Text objectiveText;
-    public Text missionText;        //put this into a seperate script???
-    public Text ObjectiveIntroText;      //put this into a seperate script???
-    public Text chosenEpisode; //put this into a seperate script???
+    public Text missionText;                //put this into a seperate script???
+    public Text ObjectiveIntroText;         //put this into a seperate script???
+    public Text chosenEpisode;              //put this into a seperate script???
 
     public string missionName = "";
     private string[] mainMenuText = { "✠ Überleben ✠", "✠ Mission ✠", "✠ Beenden ✠" };
@@ -290,7 +290,7 @@ public class Manager : MonoBehaviour
         {
             if (playerActive[i])
             {
-                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], new Vector2((1-playerCount)+(i*2), -4f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
+                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], new Vector2((1 - playerCount) + (i * 2), -4f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
                 player[i].SendMessage("SetPlayer", (i + 1));
                 player[i].SendMessage("SetPlaneValue", (playerCount));
             }
@@ -307,8 +307,8 @@ public class Manager : MonoBehaviour
             Background.GetComponent<MeshRenderer>().material = BackgroundMaterials[currentMissionSelected / 5];
 
             //Spawn level if assigned
-            if(missionObject[currentMissionSelected] != null)
-            Instantiate(missionObject[currentMissionSelected], missionObject[currentMissionSelected].transform.position, missionObject[currentMissionSelected].transform.rotation);
+            if (missionObject[currentMissionSelected] != null)
+                Instantiate(missionObject[currentMissionSelected], missionObject[currentMissionSelected].transform.position, missionObject[currentMissionSelected].transform.rotation);
 
             if (currentMissionSelected == 0)
             {
@@ -754,15 +754,18 @@ public class Manager : MonoBehaviour
                     pressedButton = true;
 
                     GoToCharSelection();
-                }            
+                }
 
             //CharacterSelection
             if (currentMenu == activeMenu.CharSelection)
             {
                 GameObject[] charPreviews = GameObject.FindGameObjectsWithTag("CharPreviewer");
+
+                int pos = 256, posY = 32;
+
                 for (int j = 0; j < charPreviews.Length; j++)
                 {
-                    charPreviews[j].transform.localPosition = new Vector3((0 - 192 * (charPreviews.Length - 1)) + j * 384, 32f, 0f);
+                    charPreviews[j].transform.localPosition = new Vector3((0 - pos * (charPreviews.Length - 1)) + j * (pos * 2), posY, 0f);
                 }
 
                 for (int i = 0; i < player.Length; i++)
@@ -774,7 +777,7 @@ public class Manager : MonoBehaviour
                         playerCount++;
                         playerActive[i] = true;
                         PlayerChosenChar[i].SetActive(true);
-                        PlayerChosenChar[i].GetComponentInChildren<Text>().text = "Spieler " + i+1;                      
+                        PlayerChosenChar[i].GetComponentInChildren<Text>().text = "Spieler " + i + 1;
 
                         UINavigationAudio();
                     }
@@ -885,14 +888,14 @@ public class Manager : MonoBehaviour
                 {
                     pressedDpad = false;
                 }
-                
+
                 //################################Keyboardsupport################################
                 if (Input.GetKey(KeyCode.DownArrow) && !pressedArrow)
                 {
                     Debug.Log(currentMissionSelected);
                     if (currentMenu == activeMenu.ModeSelection)
                         currentMainMenuSelection++;
-                    
+
                     if (currentMenu == activeMenu.MissionSelection)
                         do
                         {
@@ -905,10 +908,10 @@ public class Manager : MonoBehaviour
                         } while (Missions[currentMissionSelected].GetComponent<Mission>().status < 1);
 
                     Debug.Log(currentMissionSelected);
-                    
+
                     Dpad();
                 }
-                
+
                 //Navigate up the MainMenu
                 if (Input.GetKey(KeyCode.UpArrow) && !pressedArrow)
                 { //&& currentMenu==1 ?
@@ -952,7 +955,6 @@ public class Manager : MonoBehaviour
                 else
                     GoToCharSelection();
             }
-
 
         //Start the game
         if (currentMenu == activeMenu.CharSelection)
