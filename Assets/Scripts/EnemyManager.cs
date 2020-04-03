@@ -107,7 +107,8 @@ public class EnemyManager : MonoBehaviour
             //Spawning additional Objectives, if you missed the objective another one should spawn faster
             if (Manager.current.objectiveKills < Manager.current.requiredObjectivesToKill && (seconds % campaingObjectiveSpawn == 0))
             {
-                Instantiate(objectives[1], objectives[1].transform.position = new Vector2(0f, 10f), objectives[1].transform.rotation);
+                int episode = Manager.current.currentMissionSelected;
+                Instantiate(objectives[episode], objectives[episode].transform.position = new Vector2(0f, 10f), objectives[episode].transform.rotation);
                 campaingObjectiveSpawn = 20;
             }
         }
@@ -164,77 +165,50 @@ public class EnemyManager : MonoBehaviour
 
             if (Manager.current.currentMissionSelected > 4 && Manager.current.currentMissionSelected < 10)
             {
-
+                //Escort 2 Planes
                 if (Manager.current.currentMissionSelected == 5)
-                {//VIP
-                    int rng = Random.Range(0, 2); //-1
-                    if (rng == 0) //7 enemies
-                        for (int i = 0; i < 7; i++)
-                        {
-                            spawnPosition = -6f + 2f * i; //FullscreenSpawn
-
-                            Instantiate(e2Enemies[0], e2Enemies[0].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e2Enemies[0].transform.rotation);
-                        }
-                    if (rng == 1) //7 enemies
-                        for (int i = 0; i < 3; i++)
-                        {
-                            spawnPosition = -3f + 3f * i;
-                            Instantiate(e1Enemies[3], e1Enemies[3].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e1Enemies[3].transform.rotation);
-                        }
+                {
+                    Instantiate(enemyBlobs[0], enemyBlobs[0].transform.position, enemyBlobs[0].transform.rotation);
                 }
 
+                //Survive 
                 if (Manager.current.currentMissionSelected == 6)
-                {//Survive
-                    for (int i = 0; i < 7; i++)
-                    {
-                        spawnPosition = -6f + 2f * i; //FullscreenSpawn
-                        int rng = Random.Range(0, 2);
-                        Instantiate(e2Enemies[rng], e2Enemies[rng].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e2Enemies[rng].transform.rotation);
-                    }
+                {
+                    Instantiate(enemyBlobs[Random.Range(0, 2)], enemyBlobs[1].transform.position, enemyBlobs[1].transform.rotation);
                 }
 
+                //Kill all
                 if (Manager.current.currentMissionSelected == 7)
-                {//Rage
-                    int rng = Random.Range(0, 3);
-                    for (int i = 0; i < 7; i++)
-                    {
-                        spawnPosition = -6f + 2f * i; //FullscreenSpawn
-                        Instantiate(e2Enemies[rng], e2Enemies[rng].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e2Enemies[rng].transform.rotation);
-                    }
+                {
+                    Instantiate(enemyBlobs[Random.Range(0, 3)], enemyBlobs[1].transform.position, enemyBlobs[1].transform.rotation);
                 }
+
+                //Destroy 3 fortresses
                 if (Manager.current.currentMissionSelected == 8)
-                {//Objective
-                    int rng = Random.Range(0, 4); //-1
-                    if (rng == 0) //5 centered enemies
-                        for (int i = 0; i < 5; i++)
-                        {
-                            Instantiate(e2Enemies[3], e2Enemies[3].transform.position = new Vector2(spawnPosition, 8f), e2Enemies[3].transform.rotation);
+                {
+                    GameObject[] enemiesAlive = GameObject.FindGameObjectsWithTag("Enemy");
+                    spawnPosition = Random.Range(min.x + 1, max.x - 1);
+                    int rng = Random.Range(0, 8);
 
-                            if (i % 2 == 0)
-                                spawnPosition = (spawnPosition + 2);
+                    if (enemiesAlive.Length < Manager.current.requiredKillsToWin - Manager.current.kills)
+                        if (rng == 0)
+                            Instantiate(e1Enemies[4], e1Enemies[4].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[4].transform.rotation);
+                        else
+                            Instantiate(e1Enemies[1], e1Enemies[1].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[1].transform.rotation);
 
-                            spawnPosition *= -1;
-                        }
-                    if (rng == 1) //3 enemies
-                        for (int i = 0; i < 3; i++)
-                        {
-                            spawnPosition = -3f + 3f * i;
-                            Instantiate(e2Enemies[4], e2Enemies[4].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e2Enemies[4].transform.rotation);
-                        }
                 }
+
+                //Boss
                 if (Manager.current.currentMissionSelected == 9)
-                {//Boss
-                    for (int i = 0; i < 5; i++)
+                {
+                    int rng = Random.Range(0, 2); //-1
+
+                    if (rng == 0)
                     {
-                        int rng = Random.Range(0, 5);
-                        Instantiate(e2Enemies[rng], e2Enemies[rng].transform.position = new Vector2(spawnPosition, i % 2 + 8f), e2Enemies[rng].transform.rotation);
-
-                        if (i % 2 == 0)
-                            spawnPosition = (spawnPosition + 2);
-
-                        spawnPosition *= -1;
+                        Instantiate(enemyBlobs[Random.Range(0, 2)], enemyBlobs[1].transform.position, enemyBlobs[1].transform.rotation);
                     }
                 }
+
                 //################################################################################################################################
             }
         }
