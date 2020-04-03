@@ -32,7 +32,7 @@ public class Manager : MonoBehaviour
     public int MAXPLAYERS = 4;
     public int requiredKillsToWin = 64;
     public int currentMainMenuSelection = 0;        //Used for iteration with arrow keys oder dpad inside the main menu
-    public int currentMissionSelected = 0;         //Used for iteration with arrow keys oder dpad inside the mission menu
+    public int currentMissionSelected = 0;          //Used for iteration with arrow keys oder dpad inside the mission menu
     public int kills = 0;
     public int secondsLeft = 300;
     public int objectiveKills = 0;
@@ -182,6 +182,9 @@ public class Manager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.I))
+            InstaWin();
+
         if (currentMenu == activeMenu.None)
         {
             //Count players alive
@@ -482,7 +485,7 @@ public class Manager : MonoBehaviour
                 if (playerAlive.Length > 0 && currentMenu == activeMenu.None && !bossSpawned)
                 {
                     objectiveComplete = true;
-                    ShowHighScore();
+                    StartCoroutine(ShowHighScore());
                 }
             }
         }
@@ -576,8 +579,13 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void ShowHighScore()
+    public IEnumerator ShowHighScore()
     {
+        fadeDirection = 1;
+        StartCoroutine("Fade");
+
+        yield return new WaitForSeconds(1);
+
         currentMenu = activeMenu.Highscore;
         ShowAndHideCanvas();
 
@@ -778,7 +786,6 @@ public class Manager : MonoBehaviour
                         playerActive[i] = true;
                         PlayerChosenChar[i].SetActive(true);
                         PlayerChosenChar[i].GetComponentInChildren<Text>().text = "Spieler " + i + 1;
-
                         UINavigationAudio();
                     }
                     if ((GamePad.GetButton(GamePad.Button.B, gamePadIndex[i])) && playerActive[i])
@@ -802,13 +809,38 @@ public class Manager : MonoBehaviour
                         playersChosenCharacter[i]--;
                         playersChosenCharacter[i] %= PlayableCharacters.Length;
                         PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[i])];
-                        UIBeeps[1].Play();
+                        UINavigationAudio();
                     }
                     if (playerDpad[i].y == 0f)
                     {
                         pressedPlayerDpad[i] = false;
                     }
+
+                    float attributeValue;
+
+                    attributeValue = PlayableCharacters[playersChosenCharacter[i]].GetComponent<Player>().maxHP/10f;
+                    PlayerChosenChar[i].transform.GetChild(3).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
+
+                    if (i == 0)
+                        Debug.Log(attributeValue);
+
+                    attributeValue = PlayableCharacters[(playersChosenCharacter[i])].GetComponent<Player>().speed / 10f;
+                    PlayerChosenChar[i].transform.GetChild(4).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
+
+                    int amountOfCannons =0;
+                    for (int l = 0; l < PlayableCharacters[(playersChosenCharacter[i])].GetComponent<Player>().transform.childCount; l++)
+                    {
+                        if (PlayableCharacters[(playersChosenCharacter[i])].GetComponent<Player>().transform.GetChild(l).tag == "Cannon")
+                            amountOfCannons++;
+                    }
+
+                    attributeValue = amountOfCannons/1.5f;
+                    PlayerChosenChar[i].transform.GetChild(5).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
+
                 }
+
+                //PlayableCharacters;
+                //bossHealth = (RectTransform)bossCanvas.transform;
 
                 //Keyboard for Player 01
                 /*
