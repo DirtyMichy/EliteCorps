@@ -89,7 +89,12 @@ public class Player : UnitObject
 
         for (int i = 0; i <= Manager.current.MAXPLAYERS; i++)
         {
-            if (currentPlayer == i && ammo > 0 && readyToFire && (GamePad.GetButton(GamePad.Button.A, gamePadIndex[i]) || (Input.GetKey(KeyCode.A) && (currentPlayer == 0))))
+            if (ammo > 0 && readyToFire &&
+                (
+                    (currentPlayer == i && (GamePad.GetButton(GamePad.Button.A, gamePadIndex[i])) 
+                    || 
+                    (Input.GetKey(KeyCode.A) && (currentPlayer == 1)))
+                ))
                 StartCoroutine("WaitForBullet");
         }
 
@@ -413,8 +418,8 @@ public class Player : UnitObject
 
             if (currentHP <= 0)
             {
-                Manager.current.PlayDeathSound();
                 Explode();
+                Manager.current.PlayDeathSound();
             }
             else
             {

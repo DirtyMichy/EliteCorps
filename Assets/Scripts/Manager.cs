@@ -116,7 +116,7 @@ public class Manager : MonoBehaviour
         secondsLeft = 0;
         objectiveKills = 666;
         objectiveComplete = true;
-        ShowHighScore();
+        StartCoroutine(ShowHighScore());
     }
 
     public void PlayDeathSound()
@@ -192,17 +192,17 @@ public class Manager : MonoBehaviour
             {
                 Debug.Log("GameOver");
                 currentMenu = activeMenu.Highscore;
-                ShowHighScore();
+                StartCoroutine(ShowHighScore());
             }
 
             if (missionMode == missionObjectives.escortAndDefend)
             {
                 GameObject[] escortPlaneCount = GameObject.FindGameObjectsWithTag("Escort");
-                if (escortPlaneCount.Length == 0 && !objectiveComplete && !bossSpawned)
+                if (escortPlaneCount.Length == 0 && !objectiveComplete && !bossSpawned && currentMenu != activeMenu.Highscore)
                 {
                     Debug.Log("GameOver");
                     currentMenu = activeMenu.Highscore;
-                    ShowHighScore();
+                    StartCoroutine(ShowHighScore());
                 }
             }
 
@@ -237,7 +237,7 @@ public class Manager : MonoBehaviour
 
     void UINavigationAudio()
     {
-        UIBeeps[1].Play();
+        UIBeeps[2].Play();
     }
 
     void UISelectionAudio()
@@ -838,9 +838,6 @@ public class Manager : MonoBehaviour
                     PlayerChosenChar[i].transform.GetChild(5).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
 
                 }
-
-                //PlayableCharacters;
-                //bossHealth = (RectTransform)bossCanvas.transform;
 
                 //Keyboard for Player 01
                 /*
