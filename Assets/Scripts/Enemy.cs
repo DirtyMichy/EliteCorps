@@ -12,17 +12,13 @@ public class Enemy : UnitObject
     public bool isGroundUnit = false;
     public bool isBoss = false;         //Bosses start the highscore by death
     public bool firingStarted = false;  //to ensure a coroutine isnt started twice
+    public bool stopMovingInCenter = false;
     public RectTransform bossHealth;    //important for bossHealthBars
     public GameObject powerUp;          //if this isn't null, the enemy can drop a powerUp
     private bool isDying = false;       //some enemies have a dyingtimer, if shot they would award multiple times the pointvalue
 
     void Awake()
     {
-        if (unitName == "MinigunCopter" || unitName == "Friendly")
-        {
-            StartCoroutine("ChopperDance");
-        }
-
         if (isBoss)
         {
             //the more players, the more hitPoints the boss will have
@@ -40,7 +36,7 @@ public class Enemy : UnitObject
         if (GetComponent<Rigidbody2D>())
             if (unitName == "Boss02")
                 GetComponent<Rigidbody2D>().velocity = (transform.up) * speed;
-            else 
+            else
                 GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * speed;
     }
 
@@ -60,30 +56,19 @@ public class Enemy : UnitObject
             speed = 0f;
             GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * speed;
         }
-    }
 
-    IEnumerator ChopperDance()
-    {
-        while (true)
+        if (stopMovingInCenter)
         {
-            if (GetComponent<Rigidbody2D>())
+            speed = 0f;
+            GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * speed;
+
+            if (GetComponent<AcquireTarget>())
             {
-                GetComponent<Rigidbody2D>().velocity = (transform.right * -1) * speed;
-
-                yield return new WaitForSeconds(1f);
-
-                GetComponent<Rigidbody2D>().velocity = (transform.right) * speed;
-
-                yield return new WaitForSeconds(1f);
-
-                if (unitName == "MinigunCopter")
-                    GetComponent<Rigidbody2D>().velocity = (transform.up * -1) * speed;
-                else
-                    GetComponent<Rigidbody2D>().velocity = transform.up.normalized * 0;
-
-                yield return new WaitForSeconds(2f);
+                Vector3 direction = transform.position - GetComponent<AcquireTarget>().currentTarget.transform.position;
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * 180 / Mathf.PI + 90, new Vector3(0, 0, 1)), Time.deltaTime * 50f);
             }
         }
+        
     }
 
     void OnTriggerEnter2D(Collider2D c)
@@ -116,11 +101,11 @@ public class Enemy : UnitObject
                 Instantiate(powerUp, transform.position, transform.rotation);
 
             Explode();
-             
+
             if (isBoss)
             {
                 StartCoroutine("BossExplosion");
-                
+
                 Manager.current.objectiveComplete = true;
                 Manager.current.ShowHighScore();
             }

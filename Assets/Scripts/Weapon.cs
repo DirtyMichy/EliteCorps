@@ -48,6 +48,7 @@ public class Weapon : MonoBehaviour
         //stop shooting if units gets near the south viewport, so they don't shoot backwards
         while (firingStarted)
         {
+            if(transform.position.y < 5.4f)
             for (int i = 0; i < Guns.Length; i++)
             {
                 for (int j = 0; j < bulletsPerShot; j++)
@@ -76,9 +77,5 @@ public class Weapon : MonoBehaviour
             }
             yield return new WaitForSeconds(firingSpeed + Random.Range(0, randomizedFiringDelay));
         }
-
-        firingStarted = false;
-        canShoot = false;
-        StopCoroutine("Shoot");
     }
 }

@@ -101,25 +101,17 @@ public class Player : UnitObject
         //Specialweapons
         if (specialAmmo > 0)
         {
-            if (currentPlayer == 1 && (GamePad.GetButton(GamePad.Button.X, GamePad.Index.One) || Input.GetKey(KeyCode.X)))
+            if (currentPlayer == 1 && specialRDY && Input.GetKey(KeyCode.X))
             {
-                if (specialRDY)
                     StartCoroutine("WaitForSpecialBullet");
             }
-            if (currentPlayer == 2 && GamePad.GetButton(GamePad.Button.X, GamePad.Index.Two))
+
+            for (int i = 0; i < Manager.current.MAXPLAYERS; i++)
             {
-                if (specialRDY)
+                if ((GamePad.GetButton(GamePad.Button.X, gamePadIndex[i])) && currentPlayer == i && specialRDY)
+                {
                     StartCoroutine("WaitForSpecialBullet");
-            }
-            if (currentPlayer == 3 && GamePad.GetButton(GamePad.Button.X, GamePad.Index.Three))
-            {
-                if (specialRDY)
-                    StartCoroutine("WaitForSpecialBullet");
-            }
-            if (currentPlayer == 4 && GamePad.GetButton(GamePad.Button.X, GamePad.Index.Four))
-            {
-                if (specialRDY)
-                    StartCoroutine("WaitForSpecialBullet");
+                }
             }
         }
     }

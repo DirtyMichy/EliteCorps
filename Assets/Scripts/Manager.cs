@@ -78,6 +78,7 @@ public class Manager : MonoBehaviour
     public GameObject fader;
     public GameObject missionMarker;
     public GameObject backGround;
+    public GameObject gameOver;
 
     public List<Text> highScoreGUIText;
     public List<Text> mainMenuGuiText;
@@ -654,14 +655,13 @@ public class Manager : MonoBehaviour
 
         int highestScore = 0;
         int highestPlayer = 0;
-        /*
-        int pos = 256, posY = 32;
+
+        float pos = 256, posY = 0.64f;
         
-        for (int j = 0; j < highScoreGUIText.Count; j++)
+        for (int j = 0; j < playerCount; j++)
         {
-            highScoreGUIText[j].transform.localPosition = new Vector3((0 - pos * (highScoreGUIText.Count - 1)) + j * (pos * 2), posY, 0f);
+            //highScoreGUIText[j].transform.localPosition = new Vector3((0 - pos * (playerCount - 1)) + j * (pos * 2), posY, 0f);
         }
-        */
 
         for (int i = 0; i < 4; i++)
         {
@@ -677,7 +677,7 @@ public class Manager : MonoBehaviour
                 highestScore = playerScore[i];
                 highestPlayer = i;
             }
-            highScoreGUIText[i].transform.position = new Vector3(1f / (playerCount + 1f) * (i + 1), 0.6f, 0f);
+            highScoreGUIText[i].transform.position = new Vector3((0 - pos * (playerCount - 1)) + i * (pos * 2), posY, 0f);
         }
 
         highScoreGUIText[highestPlayer].transform.GetChild(0).gameObject.SetActive(true);
@@ -797,7 +797,7 @@ public class Manager : MonoBehaviour
                     charPreviews[j].transform.localPosition = new Vector3((0 - pos * (charPreviews.Length - 1)) + j * (pos * 2), posY, 0f);
                 }
 
-                for (int i = 0; i < player.Length; i++)
+                for (int i = 0; i < MAXPLAYERS; i++)
                 {
                     playerDpad[i] = GamePad.GetAxis(GamePad.Axis.Dpad, gamePadIndex[i]);
 

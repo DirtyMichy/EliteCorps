@@ -4,7 +4,7 @@ public class PowerUp : MonoBehaviour
 {
     public int speed = 10;
     private int powerUpType = 0;     //0 = None, 1 = Ammo, 2 = Special, 3 = Health
-    public int bonusAmmo = 0, bonusSpecial = 0, bonusHealth = 0;        
+    public int bonusAmmo = 0, bonusSpecial = 0, bonusHealth = 0;
     public Sprite[] PowerUpSprites;
 
     void Awake()
@@ -40,10 +40,17 @@ public class PowerUp : MonoBehaviour
                 }
             default:
                 break;
-        }       
+        }
 
         GetComponent<Rigidbody2D>().velocity = transform.up.normalized * -speed;
         GetComponent<SpriteRenderer>().sprite = PowerUpSprites[powerUpType - 1];
         GetComponent<AudioSource>().Play();
+
+        Invoke("Die", 4f);
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject);
     }
 }
