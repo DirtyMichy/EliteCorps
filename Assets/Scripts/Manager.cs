@@ -7,14 +7,14 @@ using System.IO;
 
 public class Manager : MonoBehaviour
 {
-    public static Manager current;          //A public static reference to itself (make's it visible to other objects without a reference)
+    public static Manager current;                  //A public static reference to itself (make's it visible to other objects without a reference)
 
     [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Player ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
 
     public int playerCount = 0;
-    public int[] playersChosenCharacter;    //Chosen Character by Player 0 = Character01
-    public int[] playerScore;               //The player's score 0 = Player1, ...
-    public bool[] playerActive;             //0 = Player1, ...
+    public int[] playersChosenCharacter;            //Chosen Character by Player 0 = Character01
+    public int[] playerScore;                       //The player's score 0 = Player1, ...
+    public bool[] playerActive;                     //0 = Player1, ...
     public GameObject[] PlayerChosenChar;
     private bool pressedDpad = false;
     private bool pressedArrow = false;
@@ -73,7 +73,7 @@ public class Manager : MonoBehaviour
     [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Canvas ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
 
     public GameObject[] CanvasScreens;
-    private int fadeDirection = -1;         //-1 fadeIn (transparent), 1 fadeOut (darken)
+    private int fadeDirection = -1;             //-1 fadeIn (transparent), 1 fadeOut (darken)
     private bool fadeFinished = false;
     public GameObject fader;
     public GameObject missionMarker;
@@ -83,9 +83,9 @@ public class Manager : MonoBehaviour
     public List<Text> mainMenuGuiText;
 
     public Text objectiveText;
-    public Text missionText;                //put this into a seperate script???
-    public Text ObjectiveIntroText;         //put this into a seperate script???
-    public Text chosenEpisode;              //put this into a seperate script???
+    public Text missionText;                    //put this into a seperate script???
+    public Text ObjectiveIntroText;             //put this into a seperate script???
+    public Text chosenEpisode;                  //put this into a seperate script???
 
     public string missionName = "";
     private string[] mainMenuText = { "✠ Überleben ✠", "✠ Mission ✠", "✠ Beenden ✠" };
@@ -158,7 +158,8 @@ public class Manager : MonoBehaviour
             }
         }
 
-        fadeDirection = -1;     //-1 fadeIn (transparent), 1 fadeOut (darken)
+        //-1 fadeIn (transparent), 1 fadeOut (darken)
+        fadeDirection = -1;
         StartCoroutine("Fade");
 
         UIBeeps = GetComponents<AudioSource>();
@@ -653,13 +654,14 @@ public class Manager : MonoBehaviour
 
         int highestScore = 0;
         int highestPlayer = 0;
-
+        /*
         int pos = 256, posY = 32;
-
+        
         for (int j = 0; j < highScoreGUIText.Count; j++)
         {
             highScoreGUIText[j].transform.localPosition = new Vector3((0 - pos * (highScoreGUIText.Count - 1)) + j * (pos * 2), posY, 0f);
         }
+        */
 
         for (int i = 0; i < 4; i++)
         {
@@ -668,14 +670,17 @@ public class Manager : MonoBehaviour
             else
                 highScoreGUIText[i].text = "";
 
+            highScoreGUIText[highestPlayer].transform.GetChild(0).gameObject.SetActive(false);
+
             if (playerScore[i] > highestScore)
             {
                 highestScore = playerScore[i];
                 highestPlayer = i;
             }
-
             highScoreGUIText[i].transform.position = new Vector3(1f / (playerCount + 1f) * (i + 1), 0.6f, 0f);
         }
+
+        highScoreGUIText[highestPlayer].transform.GetChild(0).gameObject.SetActive(true);
 
         resetScore();
 
