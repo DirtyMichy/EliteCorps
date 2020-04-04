@@ -7,7 +7,7 @@ public class PowerUp : MonoBehaviour
     public int bonusAmmo = 0, bonusSpecial = 0, bonusHealth = 0;        
     public Sprite[] PowerUpSprites;
 
-    void OnEnable()
+    void Awake()
     {
         powerUpType = Random.Range(1, 4);
 
@@ -42,10 +42,8 @@ public class PowerUp : MonoBehaviour
                 break;
         }       
 
-        GetComponent<Rigidbody2D>().velocity = transform.up.normalized * speed;
+        GetComponent<Rigidbody2D>().velocity = transform.up.normalized * -speed;
         GetComponent<SpriteRenderer>().sprite = PowerUpSprites[powerUpType - 1];
         GetComponent<AudioSource>().Play();
-
-        iTween.ScaleBy(gameObject, iTween.Hash("amount", new Vector3(8f, 8f, 8f), "easeType", "easeInOutExpo", "time", .5f));
     }
 }

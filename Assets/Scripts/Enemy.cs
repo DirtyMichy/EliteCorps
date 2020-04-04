@@ -111,7 +111,7 @@ public class Enemy : UnitObject
             Manager.current.AddPoint(point, obj.owner, isObjective);
 
             int rng = Random.Range(0, 100 / chanceToSpawnPowerUp);
-
+            Debug.Log(rng);
             if (powerUp && rng == 0 && powerUp != null)
                 Instantiate(powerUp, transform.position, transform.rotation);
 

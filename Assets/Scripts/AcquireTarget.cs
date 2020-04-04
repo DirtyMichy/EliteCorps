@@ -8,7 +8,7 @@ public class AcquireTarget : MonoBehaviour
     public float rotationSpeed = 10f;
     public float range = 8f;
     public bool targetAcquired = false;
-        void Update()
+    void Update()
     {
         if (transform.position.y < 6f) //Dont target players if outside of viewport (important for campaign)
         {

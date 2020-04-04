@@ -127,6 +127,8 @@ public class Manager : MonoBehaviour
 
     void Awake()
     {
+        fader.SetActive(true);
+
         if (current == null)
             current = this;
         else
@@ -300,7 +302,6 @@ public class Manager : MonoBehaviour
         }
 
         objectiveComplete = false;
-        spawnManager.GetComponent<EnemyManager>().StartSpawnCoroutines();
 
         //activeMenu.None check will be used to check inside of Update() if all players are alive, so it needs to be set AFTER the players are spawned
         currentMenu = activeMenu.None;
@@ -393,6 +394,8 @@ public class Manager : MonoBehaviour
         GetComponent<AudioSource>().clip = BattleMusic[Random.Range(1, BattleMusic.Length)];
         GetComponent<AudioSource>().Play();
         StartCoroutine("VolumeOn");
+
+        spawnManager.GetComponent<EnemyManager>().StartSpawnCoroutines();
     }
 
     //Show the missionObjective at start
@@ -412,6 +415,7 @@ public class Manager : MonoBehaviour
     //Fade in and out
     IEnumerator Fade()
     {
+        Debug.Log("Fading");
         fadeFinished = false;
         for (float i = 0; i != 100; i++)
         {
@@ -620,6 +624,11 @@ public class Manager : MonoBehaviour
                 Dpad();
 
                 Save();
+
+                for (int i = 0; i < Missions.Count; i++)
+                {
+                    Missions[i].GetComponent<SpriteRenderer>().sprite = MissionSprites[Missions[i].GetComponent<Mission>().status];
+                }
             }
         }
         else
@@ -644,6 +653,13 @@ public class Manager : MonoBehaviour
 
         int highestScore = 0;
         int highestPlayer = 0;
+
+        int pos = 256, posY = 32;
+
+        for (int j = 0; j < highScoreGUIText.Count; j++)
+        {
+            highScoreGUIText[j].transform.localPosition = new Vector3((0 - pos * (highScoreGUIText.Count - 1)) + j * (pos * 2), posY, 0f);
+        }
 
         for (int i = 0; i < 4; i++)
         {
@@ -820,9 +836,6 @@ public class Manager : MonoBehaviour
 
                     attributeValue = PlayableCharacters[playersChosenCharacter[i]].GetComponent<Player>().maxHP/10f;
                     PlayerChosenChar[i].transform.GetChild(3).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
-
-                    if (i == 0)
-                        Debug.Log(attributeValue);
 
                     attributeValue = PlayableCharacters[(playersChosenCharacter[i])].GetComponent<Player>().speed / 10f;
                     PlayerChosenChar[i].transform.GetChild(4).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);

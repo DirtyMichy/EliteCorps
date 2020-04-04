@@ -14,7 +14,7 @@ public class EnemyManager : MonoBehaviour
     public GameObject[] e1Enemies;
     public GameObject[] e2Enemies;
     public GameObject[] objectives;
-    private GameObject objectiveToKill;
+    public GameObject objectiveToKill;
 
     public void Start()
     {
@@ -25,10 +25,9 @@ public class EnemyManager : MonoBehaviour
     public void StartSpawnCoroutines()
     {
         StartCoroutine("Spawn");
-
         //global seetings
         maxRngForWaves = 2;
-        seconds = 20;
+        seconds = 0;
         timeBetweenSpawns = 20 / Manager.current.playerCount;
 
         //Level specific settings
@@ -36,7 +35,7 @@ public class EnemyManager : MonoBehaviour
         {
             case 0:
                 campaingObjectiveSpawn = 15;
-                objectiveToKill = objectives[2];
+                objectiveToKill = objectives[Random.Range(0,4)];
                 break;
             case 2:
                 campaingObjectiveSpawn = 30;
@@ -76,19 +75,23 @@ public class EnemyManager : MonoBehaviour
     //Spawns enemies and counts seconds
     public IEnumerator Spawn()
     {
+        Debug.Log("StartCoroutineSpawn");
         while (Manager.current.currentMenu == Manager.activeMenu.None)
         {
-            if (Manager.current.gameMode == Manager.selectedGameMode.campaign)
+            Debug.Log("StartCoroutineSpawn");
+            Debug.Log("Spawning");
+
+            if (Manager.current.gameMode == Manager.selectedGameMode.campaign && seconds % timeBetweenSpawns == 0)
             {
                 missionSpawns();
-                yield return new WaitForSeconds(timeBetweenSpawns);
             }
 
             if (Manager.current.gameMode == Manager.selectedGameMode.survive)
             {
                 Waves();
-                yield return new WaitForSeconds(10f / Manager.current.playerCount);
             }
+
+            yield return new WaitForSeconds(1f);
 
             seconds++;
         }
@@ -105,11 +108,11 @@ public class EnemyManager : MonoBehaviour
         if (Manager.current.missionMode == Manager.missionObjectives.killObjective)
         {
             //Spawning additional Objectives, if you missed the objective another one should spawn faster
-            if (Manager.current.objectiveKills < Manager.current.requiredObjectivesToKill && (seconds % campaingObjectiveSpawn == 0))
+            if (Manager.current.objectiveKills < Manager.current.requiredObjectivesToKill && (seconds % campaingObjectiveSpawn == 0) && (seconds > 60))
             {
                 int episode = Manager.current.currentMissionSelected;
-                Instantiate(objectives[episode], objectives[episode].transform.position = new Vector2(0f, 10f), objectives[episode].transform.rotation);
-                campaingObjectiveSpawn = 20;
+                Instantiate(objectiveToKill);
+                campaingObjectiveSpawn = 10;
             }
         }
 
@@ -120,7 +123,7 @@ public class EnemyManager : MonoBehaviour
             //Destroy 4 bunkers
             if (Manager.current.currentMissionSelected == 0)
             {
-                Instantiate(enemyBlobs[0], enemyBlobs[0].transform.position, enemyBlobs[0].transform.rotation);
+                Instantiate(enemyBlobs[4]);
             }
 
             //Escort boat
