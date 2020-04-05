@@ -129,7 +129,7 @@ public class Player : UnitObject
 
     public void playerUIUpdate()
     {
-        if (Manager.current.playerCount > 1)
+        if (Manager.current.playerCount > 2)
             playerNumberText.text = "" + currentPlayer;
         else
             playerNumberText.text = "";

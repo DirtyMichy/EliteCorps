@@ -1029,8 +1029,16 @@ public class Manager : MonoBehaviour
     {
         iTween.MoveTo(missionMarker, iTween.Hash("position", Missions[currentMissionSelected].transform.position, "easeType", "linear", "time", .5f));
 
-        chosenEpisode.text = "Episode\t" + (currentMissionSelected / 5 + 1) + "\nMission\t" + (currentMissionSelected % 5 + 1);
-        missionText.text = "E" + (currentMissionSelected / 5 + 1) + "M" + ((currentMissionSelected % 5) + 1);
+        if(currentMissionSelected == 21)
+        {
+            chosenEpisode.text = "Episode\t" + "?" + "\nMission\t" + "?";
+            missionText.text = "E?M?";
+        }
+        else
+        {
+            chosenEpisode.text = "Episode\t" + (currentMissionSelected / 5 + 1) + "\nMission\t" + (currentMissionSelected % 5 + 1);
+            missionText.text = "E" + (currentMissionSelected / 5 + 1) + "M" + ((currentMissionSelected % 5) + 1);
+        }
     }
 
     //Navigating to the main menu
