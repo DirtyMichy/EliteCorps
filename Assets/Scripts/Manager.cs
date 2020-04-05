@@ -12,7 +12,7 @@ public class Manager : MonoBehaviour
     [Header("✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠ Player ✠ - ✠ - ✠ - ✠ - ✠ - ✠ - ✠")]
 
     public int playerCount = 0;
-    public int[] playersChosenCharacter;            //Chosen Character by Player 0 = Character01
+    public int[] chosenCharacterIndex;            //Chosen Character by Player 0 = Character01
     public int[] playerScore;                       //The player's score 0 = Player1, ...
     public bool[] playerActive;                     //0 = Player1, ...
     public GameObject[] PlayerChosenChar;
@@ -74,7 +74,7 @@ public class Manager : MonoBehaviour
 
     public GameObject[] CanvasScreens;
     private int fadeDirection = -1;             //-1 fadeIn (transparent), 1 fadeOut (darken)
-    private bool fadeFinished = false;
+    private bool fadeFinished = true;
     public GameObject fader;
     public GameObject missionMarker;
     public GameObject backGround;
@@ -171,13 +171,13 @@ public class Manager : MonoBehaviour
         playerActive = new bool[MAXPLAYERS];
         playerScore = new int[MAXPLAYERS];
         player = new GameObject[MAXPLAYERS];
-        playersChosenCharacter = new int[MAXPLAYERS];
+        chosenCharacterIndex = new int[MAXPLAYERS];
         pressedPlayerDpad = new bool[MAXPLAYERS];
         playerDpad = new Vector2[MAXPLAYERS];
 
-        for (int i = 0; i < playersChosenCharacter.Length; i++)
+        for (int i = 0; i < chosenCharacterIndex.Length; i++)
         {
-            playersChosenCharacter[i] = 0;
+            chosenCharacterIndex[i] = 0;
             pressedPlayerDpad[i] = false;
             playerActive[i] = false;
             playerDpad[i] = new Vector2(0, 0);
@@ -297,7 +297,7 @@ public class Manager : MonoBehaviour
         {
             if (playerActive[i])
             {
-                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])], new Vector2((1 - playerCount) + (i * 2), -4f), PlayableCharacters[Mathf.Abs(playersChosenCharacter[i])].transform.rotation);
+                player[i] = (GameObject)Instantiate(PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])], new Vector2((1 - playerCount) + (i * 2), -4f), PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])].transform.rotation);
                 player[i].SendMessage("SetPlayer", (i + 1));
                 player[i].SendMessage("SetPlaneValue", (playerCount));
             }
@@ -417,22 +417,24 @@ public class Manager : MonoBehaviour
     //Fade in and out
     IEnumerator Fade()
     {
-        Debug.Log("Fading");
-        fadeFinished = false;
-        for (float i = 0; i != 100; i++)
+        if (fadeFinished)
         {
-            yield return new WaitForSeconds(0.025f);
+            fadeFinished = false;
+            for (float i = 0; i != 100; i++)
+            {
+                yield return new WaitForSeconds(0.025f);
 
-            if (fadeDirection == -1)
-            {
-                fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 1f - i / 100f);
+                if (fadeDirection == -1)
+                {
+                    fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 1f - i / 100f);
+                }
+                else
+                {
+                    fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, i / 100f);
+                }
             }
-            else
-            {
-                fader.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, i / 100f);
-            }
+            fadeFinished = true;
         }
-        fadeFinished = true;
     }
 
     //For objectiveMode 2
@@ -587,6 +589,11 @@ public class Manager : MonoBehaviour
 
     public IEnumerator ShowHighScore()
     {
+        if(gameMode == selectedGameMode.survive)
+            objectiveComplete = true;
+
+        gameOver.SetActive(!objectiveComplete);
+
         fadeDirection = 1;
         StartCoroutine("Fade");
 
@@ -632,6 +639,9 @@ public class Manager : MonoBehaviour
                     Missions[i].GetComponent<SpriteRenderer>().sprite = MissionSprites[Missions[i].GetComponent<Mission>().status];
                 }
             }
+
+            GetComponent<AudioSource>().clip = UImusic[5];
+            GetComponent<AudioSource>().Play();
         }
         else
         {
@@ -819,17 +829,17 @@ public class Manager : MonoBehaviour
                     if ((playerDpad[i].y < 0f) && !pressedPlayerDpad[i])
                     {
                         pressedPlayerDpad[i] = true;
-                        playersChosenCharacter[i]++;
-                        playersChosenCharacter[i] %= PlayableCharacters.Length;
-                        PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[i])];
+                        chosenCharacterIndex[i]++;
+                        chosenCharacterIndex[i] %= PlayableCharacters.Length;
+                        PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(chosenCharacterIndex[i])];
                         UINavigationAudio();
                     }
                     if ((playerDpad[i].y > 0f) && !pressedPlayerDpad[i])
                     {
                         pressedPlayerDpad[i] = true;
-                        playersChosenCharacter[i]--;
-                        playersChosenCharacter[i] %= PlayableCharacters.Length;
-                        PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[i])];
+                        chosenCharacterIndex[i]--;
+                        chosenCharacterIndex[i] %= PlayableCharacters.Length;
+                        PlayerChosenChar[i].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(chosenCharacterIndex[i])];
                         UINavigationAudio();
                     }
                     if (playerDpad[i].y == 0f)
@@ -838,23 +848,24 @@ public class Manager : MonoBehaviour
                     }
 
                     float attributeValue;
-
-                    attributeValue = PlayableCharacters[playersChosenCharacter[i]].GetComponent<Player>().maxHP/10f;
+                    Debug.Log(Mathf.Abs(-1.5f));
+                    
+                    attributeValue = PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])].GetComponent<Player>().maxHP/10f;
                     PlayerChosenChar[i].transform.GetChild(3).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
-
-                    attributeValue = PlayableCharacters[(playersChosenCharacter[i])].GetComponent<Player>().speed / 10f;
+                    
+                    attributeValue = PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])].GetComponent<Player>().speed / 10f;
                     PlayerChosenChar[i].transform.GetChild(4).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
 
                     int amountOfCannons =0;
-                    for (int l = 0; l < PlayableCharacters[(playersChosenCharacter[i])].GetComponent<Player>().transform.childCount; l++)
+                    for (int l = 0; l < PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])].GetComponent<Player>().transform.childCount; l++)
                     {
-                        if (PlayableCharacters[(playersChosenCharacter[i])].GetComponent<Player>().transform.GetChild(l).tag == "Cannon")
+                        if (PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])].GetComponent<Player>().transform.GetChild(l).tag == "Cannon")
                             amountOfCannons++;
                     }
 
                     attributeValue = amountOfCannons/1.5f;
                     PlayerChosenChar[i].transform.GetChild(5).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
-
+                    
                 }
 
                 //Keyboard for Player 01
@@ -877,16 +888,16 @@ public class Manager : MonoBehaviour
                 if (Input.GetKey(KeyCode.DownArrow) && !pressedArrow)
                 {
                     pressedArrow = true;
-                    playersChosenCharacter[0]++;
-                    playersChosenCharacter[0] %= PlayableCharacters.Length;
-                    PlayerChosenChar[0].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[0])];
+                    chosenCharacterIndex[0]++;
+                    chosenCharacterIndex[0] %= PlayableCharacters.Length;
+                    PlayerChosenChar[0].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(chosenCharacterIndex[0])];
                 }
                 if (Input.GetKey(KeyCode.UpArrow) && !pressedArrow)
                 {
                     pressedArrow = true;
-                    playersChosenCharacter[0]--;
-                    playersChosenCharacter[0] %= PlayableCharacters.Length;
-                    PlayerChosenChar[0].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(playersChosenCharacter[0])];
+                    chosenCharacterIndex[0]--;
+                    chosenCharacterIndex[0] %= PlayableCharacters.Length;
+                    PlayerChosenChar[0].GetComponent<Image>().sprite = CharPreviews[Mathf.Abs(chosenCharacterIndex[0])];
                 }
                 if (Input.GetKeyUp(KeyCode.DownArrow))
                 {

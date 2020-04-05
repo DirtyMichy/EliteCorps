@@ -46,7 +46,7 @@ public class PowerUp : MonoBehaviour
         GetComponent<SpriteRenderer>().sprite = PowerUpSprites[powerUpType - 1];
         GetComponent<AudioSource>().Play();
 
-        Invoke("Die", 4f);
+        Invoke("Die", 10f);
     }
 
     public void Die()
