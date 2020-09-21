@@ -6,7 +6,7 @@ public class DestroyAudio : MonoBehaviour
 {
     // Start is called before the first frame update
     void Awake()
-    {
+    {        
         Invoke("DestroySpawnedAudio", GetComponent<AudioSource>().clip.length);
     }
 
