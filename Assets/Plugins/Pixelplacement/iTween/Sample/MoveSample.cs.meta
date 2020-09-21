@@ -1,8 +1,24 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
+<<<<<<< HEAD:Assets/Plugins/Pixelplacement/iTween/Sample/MoveSample.cs.meta
 guid: 93cb45d44c16f45a4bbd5099fe096c20
+=======
+guid: f54f3ba731b906f4398761bded28a431
+>>>>>>> 4f64e573fbe3ab20ee454def2875e30b7671ba23:Assets/Scripts/MoveObjectDown.cs.meta
+=======
+guid: 93cb45d44c16f45a4bbd5099fe096c20
+>>>>>>> 4f64e573fbe3ab20ee454def2875e30b7671ba23
 MonoImporter:
   serializedVersion: 2
   defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
+<<<<<<< HEAD
+<<<<<<< HEAD:Assets/Plugins/Pixelplacement/iTween/Sample/MoveSample.cs.meta
+=======
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>> 4f64e573fbe3ab20ee454def2875e30b7671ba23:Assets/Scripts/MoveObjectDown.cs.meta
+=======
+>>>>>>> 4f64e573fbe3ab20ee454def2875e30b7671ba23

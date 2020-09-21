@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//This script controls the playerFollowing rockets
 public class Rockets : MonoBehaviour
 {
     
@@ -10,7 +9,6 @@ public class Rockets : MonoBehaviour
 	public float range = 32f;
 	public float speed = 1f;
 
-	// Use this for initialization
 	void Awake ()
 	{
 		float minimalEnemyDistance = float.MaxValue;
@@ -33,7 +31,6 @@ public class Rockets : MonoBehaviour
 		}
 	}
 
-	// Update is called once per frame
 	void FixedUpdate ()
 	{
 		if (currentTarget != null) {

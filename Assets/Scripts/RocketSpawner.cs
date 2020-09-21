@@ -3,24 +3,13 @@ using System.Collections;
 
 public class RocketSpawner : MonoBehaviour
 {
-
 	public bool hasTargeting = false;
-	//does the unit has targeting?
 	public bool targetAcquired = false;
-	//units with targeting acquire targets
-	public int bulletsPerShot = 1;
-	//How many bullets are spawned per shot
-    
+	public int bulletsPerShot = 1;    
 	public float shotDelay;
-	//Delay between shots
 	public GameObject rocket;
-	//The prefab of this ship's bullet
-
 	bool firingStarted = false;
-	//to ensure a coroutine isnt started twice
-
 	protected Transform[] shotPositions;
-	//Fire points on the ship
 
 	public void StopShooting ()
 	{
@@ -29,7 +18,6 @@ public class RocketSpawner : MonoBehaviour
 
 	void Awake ()
 	{       
-		//StartCoroutine("Shoot");
 		firingStarted = true;
 	}
 
@@ -41,12 +29,9 @@ public class RocketSpawner : MonoBehaviour
 		}
 	}
 
-	//Coroutine for AI shooting
 	IEnumerator Shoot ()
 	{
-		//Loop indefinitely
 		while (true) {
-			//If there is an acompanying audio, play it
 			if (GetComponent<AudioSource> ())
 				GetComponent<AudioSource> ().Play ();
 
@@ -55,7 +40,6 @@ public class RocketSpawner : MonoBehaviour
 				Debug.Log ("Rocket");
 			}
 
-			//Wait for it to be time to fire another shot
 			yield return new WaitForSeconds (shotDelay);
 		}
 	}
