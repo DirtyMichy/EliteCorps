@@ -135,9 +135,11 @@ public class Manager : MonoBehaviour
         else
             Destroy(gameObject);
 
-        for (int i = 0; i < CanvasScreens[2].transform.GetChild(0).childCount; i++)
+        Debug.Log(CanvasScreens[2].transform.childCount);
+
+        for (int i = 0; i < CanvasScreens[2].transform.childCount-1; i++)
         {
-            Missions.Add(CanvasScreens[2].transform.GetChild(0).GetChild(i).gameObject);
+            Missions.Add(CanvasScreens[2].transform.GetChild(i+1).gameObject);
         }
 
         if (!File.Exists(Application.dataPath + "/save.corpse"))
@@ -151,14 +153,16 @@ public class Manager : MonoBehaviour
             SaveLoad.Load();
             SaveFile.current = SaveLoad.savedGames[0];
 
+
             //0 locked, 1 unlocked, 2 won
             for (int i = 0; i < Missions.Count; i++)
             {
+                Debug.Log(Missions.Count);
                 Missions[i].GetComponent<Mission>().status = SaveFile.current.campaignMissionStatus[i];
                 Missions[i].GetComponent<SpriteRenderer>().sprite = MissionSprites[Missions[i].GetComponent<Mission>().status];
             }
         }
-
+        
         //-1 fadeIn (transparent), 1 fadeOut (darken)
         fadeDirection = -1;
         StartCoroutine("Fade");
@@ -166,7 +170,7 @@ public class Manager : MonoBehaviour
         UIBeeps = GetComponents<AudioSource>();
 
         StartCoroutine("VolumeOn");
-
+        
         //Avoiding index out of bounds
         playerActive = new bool[MAXPLAYERS];
         playerScore = new int[MAXPLAYERS];
@@ -174,7 +178,7 @@ public class Manager : MonoBehaviour
         chosenCharacterIndex = new int[MAXPLAYERS];
         pressedPlayerDpad = new bool[MAXPLAYERS];
         playerDpad = new Vector2[MAXPLAYERS];
-
+        
         for (int i = 0; i < chosenCharacterIndex.Length; i++)
         {
             chosenCharacterIndex[i] = 0;
@@ -185,7 +189,7 @@ public class Manager : MonoBehaviour
     }
 
     void Update()
-    {
+    {        
         if (Input.GetKey(KeyCode.I))
             InstaWin();
 
@@ -214,7 +218,7 @@ public class Manager : MonoBehaviour
         }
         else
             MenuNavigation();
-
+                
         //Back to MainMenu
         if (currentMenu != activeMenu.None && (GamePad.GetButton(GamePad.Button.Y, GamePad.Index.Any) || Input.GetKey(KeyCode.Y)) && !pressedButton && fadeFinished)
         {
@@ -848,7 +852,7 @@ public class Manager : MonoBehaviour
                     }
 
                     float attributeValue;
-                    Debug.Log(Mathf.Abs(-1.5f));
+                    //Debug.Log(Mathf.Abs(-1.5f));
                     
                     attributeValue = PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])].GetComponent<Player>().maxHP/10f;
                     PlayerChosenChar[i].transform.GetChild(3).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
