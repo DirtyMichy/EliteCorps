@@ -848,7 +848,7 @@ public class Manager : MonoBehaviour
                     }
 
                     float attributeValue;
-                    Debug.Log(Mathf.Abs(-1.5f));
+                    //Debug.Log(Mathf.Abs(-1.5f));
                     
                     attributeValue = PlayableCharacters[Mathf.Abs(chosenCharacterIndex[i])].GetComponent<Player>().maxHP/10f;
                     PlayerChosenChar[i].transform.GetChild(3).transform.localScale = new Vector3(attributeValue, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.y, PlayerChosenChar[i].transform.GetChild(3).transform.localScale.z);
