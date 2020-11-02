@@ -11,8 +11,6 @@ public class EnemyManager : MonoBehaviour
     public GameObject[] bosses;
     public GameObject[] enemies;
     public GameObject[] enemyBlobs;
-    public GameObject[] e1Enemies;
-    public GameObject[] e2Enemies;
     public GameObject[] objectives;
     public GameObject objectiveToKill;
 
@@ -147,9 +145,9 @@ public class EnemyManager : MonoBehaviour
 
                 if (enemiesAlive.Length < Manager.current.requiredKillsToWin - Manager.current.kills)
                     if (rng == 0)
-                        Instantiate(e1Enemies[4], e1Enemies[4].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[4].transform.rotation);
+                        Instantiate(enemies[4], enemies[4].transform.position = new Vector2(spawnPosition, 8f), enemies[4].transform.rotation);
                     else
-                        Instantiate(e1Enemies[1], e1Enemies[1].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[1].transform.rotation);
+                        Instantiate(enemies[1], enemies[1].transform.position = new Vector2(spawnPosition, 8f), enemies[1].transform.rotation);
 
             }
 
@@ -195,9 +193,9 @@ public class EnemyManager : MonoBehaviour
 
                     if (enemiesAlive.Length < Manager.current.requiredKillsToWin - Manager.current.kills)
                         if (rng == 0)
-                            Instantiate(e1Enemies[4], e1Enemies[4].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[4].transform.rotation);
+                            Instantiate(enemies[4], enemies[4].transform.position = new Vector2(spawnPosition, 8f), enemies[4].transform.rotation);
                         else
-                            Instantiate(e1Enemies[1], e1Enemies[1].transform.position = new Vector2(spawnPosition, 8f), e1Enemies[1].transform.rotation);
+                            Instantiate(enemies[1], enemies[1].transform.position = new Vector2(spawnPosition, 8f), enemies[1].transform.rotation);
 
                 }
 

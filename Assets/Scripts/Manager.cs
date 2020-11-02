@@ -38,7 +38,7 @@ public class Manager : MonoBehaviour
     public int objectiveKills = 0;
     public List<GameObject> Missions;
     public GameObject[] PlayableCharacters;
-    public GameObject[] missionObject;
+    public GameObject[] missionObjects;
     public GameObject[] player;
 
     public enum missionObjectives
@@ -313,8 +313,8 @@ public class Manager : MonoBehaviour
             Background.GetComponent<MeshRenderer>().material = BackgroundMaterials[currentMissionSelected / 5];
 
             //Spawn level if assigned
-            if (missionObject[currentMissionSelected] != null)
-                Instantiate(missionObject[currentMissionSelected], missionObject[currentMissionSelected].transform.position, missionObject[currentMissionSelected].transform.rotation);
+            if (missionObjects[currentMissionSelected] != null)
+                Instantiate(missionObjects[currentMissionSelected], missionObjects[currentMissionSelected].transform.position, missionObjects[currentMissionSelected].transform.rotation);
 
             if (currentMissionSelected == 0)
             {
