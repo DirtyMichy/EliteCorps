@@ -15,10 +15,12 @@ public class Enemy : UnitObject
     public bool stopMovingInCenter = false;
     public RectTransform bossHealth;    //important for bossHealthBars
     public GameObject powerUp;          //if this isn't null, the enemy can drop a powerUp
+    public GameObject healthContainer;  //incoming damage will also be applied to this object
     private bool isDying = false;       //some enemies have a dyingtimer, if shot they would award multiple times the pointvalue
 
     void Awake()
     {
+
         if (isBoss)
         {
             //the more players, the more hitPoints the boss will have
@@ -83,6 +85,10 @@ public class Enemy : UnitObject
         if (currentHP > 0)
             currentHP -= obj.damage;
 
+        if (healthContainer != null)
+            if(healthContainer.GetComponent<Enemy>().currentHP > 0)
+                healthContainer.GetComponent<Enemy>().currentHP -= obj.damage;
+
         //Setting the healthbar for the boss
         if (isBoss)
         {
@@ -114,7 +120,14 @@ public class Enemy : UnitObject
         {
             //play the damaged animation, debris is being ignored
             if (unitName != "DrillingPitDestroyed" && unitName != "BunkerDebris")
+            {
                 GetComponent<Animator>().SetTrigger("Damage");
+
+                foreach (Transform child in transform)
+                {
+                    transform.gameObject.GetComponent<Animator>().SetTrigger("Damage");
+                }
+            }
         }
 
         //Buildings stay as debris
